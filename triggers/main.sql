@@ -1,11 +1,14 @@
 /*
-Triggers. Para las actualizaciones en la tabla de sucursales los montos de los 
-ahorros.
+Triggers.
+*/
+
+/*
+1. trigger cuando se genera una nueva reserva
 */
 
 CREATE OR REPLACE TRIGGER 
 
-AFTER UPDATE OF
+AFTER UPDATE OF 
 ON 
 FOR EACH ROW
 
@@ -16,3 +19,13 @@ EXCEPTION WHEN dup_val_on_index THEN
 
 END;
 /
+
+/*
+trigger cuando se crea un tour o se agrega un nuevo destino
+*/
+
+
+
+/*
+trigger para el promedio de calificaciones
+*/

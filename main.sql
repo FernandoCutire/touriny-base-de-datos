@@ -26,8 +26,6 @@ CREATE TABLE CLIENTES (id_cliente NUMBER NOT NULL,
 );
 
 
-
-
 -- -----------------------------------------------------
 -- Table guia
 -- -----------------------------------------------------
@@ -67,6 +65,9 @@ CREATE TABLE TOURS (id_tours NUMBER NOT NULL,
     REFERENCES GUIAS (id_guia)
 );
 
+-- -----------------------------------------------------
+-- 1- NUEVOS CAMBIOS PROYECTO FINAL
+-- -----------------------------------------------------
 ALTER TABLE TOURS 
   MODIFY precio NUMBER(15,2) DEFAULT 0 NOT NULL;
 ALTER TABLE TOURS
@@ -74,7 +75,7 @@ ALTER TABLE TOURS
     status CHAR(2),
     calificacion NUMBER(1) DEFAULT 0,
     fecha_ingreso DATE,
-    CONSTRAINT c_status CHECK (status IN ())
+    CONSTRAINT c_status CHECK (status IN (''))
   );
 
 
@@ -90,6 +91,20 @@ CREATE TABLE RESERVACION (id_reserva NUMBER NOT NULL,
     FOREIGN KEY (id_cliente)
     REFERENCES CLIENTES (id_cliente)
 );
+
+
+-- -----------------------------------------------------
+-- 2- NUEVOS CAMBIOS PROYECTO FINAL
+-- -----------------------------------------------------
+
+ALTER TABLE RESERVACION
+  ADD (
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    status CHAR(2),
+    precio_total NUMBER(15,2) DEFAULT 0 NOT NULL,
+    CONSTRAINT c_status CHECK (status IN (''))
+  );
 
 
 -- -----------------------------------------------------
@@ -479,6 +494,7 @@ INSERT INTO PAIS VALUES (236, 'Zambia ');
 INSERT INTO PAIS VALUES (237, 'Zaire ');
 INSERT INTO PAIS VALUES (238, 'Zimbabue ');
 
+----Execute----
 -----CLIENTES---
 ---- CLIENTES INSERT STATEMENTS----
 INSERT INTO CLIENTES VALUES(8977, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'ANTONIO', 'JUAN8977@MAIL.COM', '(337) 308-5133', 59, 198);
@@ -582,6 +598,7 @@ INSERT INTO CLIENTES VALUES(14538, '800-99-220', 'PABLO', 'NUCKEL', 'PEREZ', 'JO
 INSERT INTO CLIENTES VALUES(14610, '800-99-221', 'MIGUEL', 'VANDERHAN', 'SAUCEDO', 'ANGEL', 'MIGUEL14610@MAIL.COM', '(583) 858-0973', 37, 164);
 INSERT INTO CLIENTES VALUES(14713, '800-99-222', 'KOENISSFEST', 'DE', 'ICAZA', 'ALFREDO', 'KOENISSFEST14713@MAIL.COM', '(711) 569-6128', 42, 164);
 
+----Execute----
 ----GUIAS----
 INSERT INTO GUIAS VALUES (1, '8-456-875', 'Fernando', 'Diaz', 'fernando.diaz@outlook.com', '68707239', 20, 'Ciudad de Panamá');
 INSERT INTO GUIAS VALUES (2, '6-916-569', 'Serena', 'Cañate', 'alexander.canate@outlook.com', '68752699', 25, 'Ciudad de Panamá');
@@ -595,8 +612,8 @@ INSERT INTO dificultad VALUES (1, 'Fácil');
 INSERT INTO dificultad VALUES (2, 'Media');
 INSERT INTO dificultad VALUES (3, 'Dificil');
 
+---Execute---
 ---TOURS---
-
 INSERT INTO TOURS VALUES (1, 'Tour de la ciudad y el Canal de Panamá ', 6, 'Conoce los mejores lugares en la ciudad de Panamá.', 67, 20, 1, 1);
 INSERT INTO TOURS VALUES (2, 'Tour privado centro histórico de Panamá', 8, 'La historia de Panamá en un tour.', 100, 5, 1, 2);
 INSERT INTO TOURS VALUES (3, 'Ven a San Blas ', 16, 'Las maravillas de la isla San Blas.', 89, 30, 2, 3);
@@ -609,7 +626,7 @@ INSERT INTO TOURS VALUES (9, 'La isla de las Flores', 9, 'La isla de las Flores 
 INSERT INTO TOURS VALUES (10, 'El Archipiélago de las Perlas', 6, 'El Archipielago de las Perlas da una gran experiencia para la familia.', 80, 12, 1, 5);
 
 
-
+----Execute----
 -----RESERVACION---
 INSERT INTO RESERVACION VALUES (1,TO_DATE('02-01-2019','DD-MM-YYYY'), 9333, 1);
 INSERT INTO RESERVACION VALUES (2,TO_DATE('03-01-2019','DD-MM-YYYY'), 10020, 2);
@@ -712,8 +729,8 @@ INSERT INTO RESERVACION VALUES (98,TO_DATE('27-11-2019','DD-MM-YYYY'), 13230, 4)
 INSERT INTO RESERVACION VALUES (99,TO_DATE('28-11-2019','DD-MM-YYYY'), 10898, 4);
 INSERT INTO RESERVACION VALUES (100,TO_DATE('28-11-2019','DD-MM-YYYY'), 9248, 2);
 
+----Trigger----
 -----RESERVA_TOURS-------
-
 INSERT INTO RESERVA_TOURS VALUES( 1, 6, TO_DATE('04-01-2019','DD-MM-YYYY'), TO_DATE('07-01-2019','DD-MM-YYYY'));
 INSERT INTO RESERVA_TOURS VALUES( 2, 1, TO_DATE('05-01-2019','DD-MM-YYYY'), TO_DATE('05-01-2019','DD-MM-YYYY'));
 INSERT INTO RESERVA_TOURS VALUES( 2, 6, TO_DATE('07-01-2019','DD-MM-YYYY'), TO_DATE('10-01-2019','DD-MM-YYYY'));
@@ -875,6 +892,7 @@ INSERT INTO RESERVA_TOURS VALUES( 100, 3, TO_DATE('30-11-2019','DD-MM-YYYY'), TO
 INSERT INTO RESERVA_TOURS VALUES( 100, 8, TO_DATE('01-12-2019','DD-MM-YYYY'), TO_DATE('01-12-2019','DD-MM-YYYY'));
 
 
+----Execute----
 -----DESTINOS---
 INSERT INTO DESTINOS VALUES (1,'Canal de Panamá');
 INSERT INTO DESTINOS VALUES (2,'Biomuseo');
@@ -893,6 +911,8 @@ INSERT INTO DESTINOS VALUES (14,'Punta chame');
 INSERT INTO DESTINOS VALUES (15,'Calzada amador');
 INSERT INTO DESTINOS VALUES (16,'Bocas del Toro');
 
+
+----Trigger----
 ----DESTINOS_TOURS---
 INSERT INTO DESTINOS_TOURS VALUES (1, 1);
 INSERT INTO DESTINOS_TOURS VALUES (2, 1);
