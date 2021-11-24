@@ -67,6 +67,15 @@ CREATE TABLE TOURS (id_tours NUMBER NOT NULL,
     REFERENCES GUIAS (id_guia)
 );
 
+ALTER TABLE TOURS 
+  MODIFY precio NUMBER(15,2) DEFAULT 0 NOT NULL;
+ALTER TABLE TOURS
+  ADD (
+    status CHAR(2),
+    calificacion NUMBER(1) DEFAULT 0,
+    fecha_ingreso DATE,
+    CONSTRAINT c_status CHECK (status IN ())
+  );
 
 
 -- -----------------------------------------------------
@@ -123,6 +132,42 @@ CREATE TABLE DESTINOS_TOURS (
     REFERENCES TOURS (id_tours)
 );
 
+
+CREATE TABLE REVIEWS (
+  id_review NUMBER NOT NULL,
+  id_cliente NUMBER NOT NULL,
+  id_tour NUMBER NOT NULL,
+  descripcion VARCHAR2(250),
+  calificacion NUMBER,
+  fecha_review DATE,
+  CONSTRAINT pk_id_reviews PRIMARY KEY (id_review),
+  CONSTRAINT fk_id_rev_client
+    FOREIGN KEY (id_cliente)
+    REFERENCES CLIENTES(id_cliente),
+  CONSTRAINT fk_id_rev_tour
+    FOREIGN KEY (id_tour)
+    REFERENCES TOURS(id_tours)  
+);
+
+CREATE TABLE AUDITORIA (
+  id_cliente NUMBER NOT NULL,
+  id_pais NUMBER NOT NULL,
+  identificacion NUMBER NOT NULL,
+  primer_nombre VARCHAR2(250) NOT NULL,
+  segundo_nombre VARCHAR2(250) NOT NULL,
+  primer_apellido VARCHAR2(250) NOT NULL,
+  segundo_apellido VARCHAR2(250) NOT NULL,
+  correo VARCHAR2(250) NOT NULL,
+  edad NUMBER NOT NULL,
+  telefono NUMBER NOT NULL,
+  ciudad VARCHAR2(250) NOT NULL,
+  direccion VARCHAR2(250) NOT NULL,
+  fecha_ingreso DATE,
+  CONSTRAINT pk_id_cliente PRIMARY KEY (id_usuario),
+  CONSTRAINT fk_aud_id_pais
+    FOREIGN KEY(id_pais)
+    REFERENCES PAIS(id_pais)
+);
 
 -----CREACION DE LAS VISTAS----
 
