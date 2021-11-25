@@ -20,8 +20,8 @@ CREATE TABLE CLIENTES (id_cliente NUMBER NOT NULL,
   edad number NOT NULL,
   cod_pais NUMBER NOT NULL,
   CONSTRAINT pk_id_cliente PRIMARY KEY (id_cliente),
-  CONSTRAINT fk_cod_pais 
-    FOREIGN KEY (cod_pais) 
+  CONSTRAINT fk_cod_pais
+    FOREIGN KEY (cod_pais)
     REFERENCES PAIS (id_pais)
 );
 
@@ -65,19 +65,6 @@ CREATE TABLE TOURS (id_tours NUMBER NOT NULL,
     REFERENCES GUIAS (id_guia)
 );
 
--- -----------------------------------------------------
--- 1- NUEVOS CAMBIOS PROYECTO FINAL
--- -----------------------------------------------------
-ALTER TABLE TOURS 
-  MODIFY precio NUMBER(15,2) DEFAULT 0 NOT NULL;
-ALTER TABLE TOURS
-  ADD (
-    status CHAR(2),
-    calificacion NUMBER(1) DEFAULT 0,
-    fecha_ingreso DATE,
-    CONSTRAINT c_status CHECK (status IN (''))
-  );
-
 
 -- -----------------------------------------------------
 -- Table reservacion
@@ -93,36 +80,23 @@ CREATE TABLE RESERVACION (id_reserva NUMBER NOT NULL,
 );
 
 
--- -----------------------------------------------------
--- 2- NUEVOS CAMBIOS PROYECTO FINAL
--- -----------------------------------------------------
-
-ALTER TABLE RESERVACION
-  ADD (
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    status CHAR(2),
-    precio_total NUMBER(15,2) DEFAULT 0 NOT NULL,
-    CONSTRAINT c_status CHECK (status IN (''))
-  );
-
 
 -- -----------------------------------------------------
 -- Table reserva_tours
 -- -----------------------------------------------------
-CREATE TABLE RESERVA_TOURS (reserva_id_reserva NUMBER NOT NULL,
-  tours_id_tours1 NUMBER NOT NULL,
+
+CREATE TABLE RESERVA_TOURS (id_reserva1 NUMBER NOT NULL,
+  id_tour1 NUMBER NOT NULL,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE NOT NULL,
-  PRIMARY KEY (reserva_id_reserva, tours_id_tours1),
+  PRIMARY KEY (id_reserva1,id_tour1),
   CONSTRAINT fk_reserva1
-    FOREIGN KEY (reserva_id_reserva)
+    FOREIGN KEY (id_reserva1)
     REFERENCES RESERVACION (id_reserva),
   CONSTRAINT fk_tours1
-    FOREIGN KEY (tours_id_tours1)
+    FOREIGN KEY (id_tour1)
     REFERENCES TOURS (id_tours)
 );
-
 
 -- -----------------------------------------------------
 -- Table destinos
@@ -136,53 +110,17 @@ CREATE TABLE DESTINOS (id_destinos NUMBER NOT NULL,
 -- Table destinos_tours
 -- -----------------------------------------------------
 CREATE TABLE DESTINOS_TOURS (
-  destinos_id_destinos NUMBER NOT NULL,
-  tours_id_tours2 NUMBER NOT NULL,
-  PRIMARY KEY (destinos_id_destinos, tours_id_tours2),
-  CONSTRAINT fk_tours_destinos1
-    FOREIGN KEY (destinos_id_destinos)
+  id_destino1 NUMBER NOT NULL,
+  id_tour2 NUMBER NOT NULL,
+  PRIMARY KEY (id_destino1,id_tour2),
+  CONSTRAINT fk_destinos1
+    FOREIGN KEY (id_destino1)
     REFERENCES DESTINOS (id_destinos),
-  CONSTRAINT fk_destinos_tours1
-    FOREIGN KEY (tours_id_tours2)
+  CONSTRAINT fk_tours2
+    FOREIGN KEY (id_tour2)
     REFERENCES TOURS (id_tours)
 );
 
-
-CREATE TABLE REVIEWS (
-  id_review NUMBER NOT NULL,
-  id_cliente NUMBER NOT NULL,
-  id_tour NUMBER NOT NULL,
-  descripcion VARCHAR2(250),
-  calificacion NUMBER,
-  fecha_review DATE,
-  CONSTRAINT pk_id_reviews PRIMARY KEY (id_review),
-  CONSTRAINT fk_id_rev_client
-    FOREIGN KEY (id_cliente)
-    REFERENCES CLIENTES(id_cliente),
-  CONSTRAINT fk_id_rev_tour
-    FOREIGN KEY (id_tour)
-    REFERENCES TOURS(id_tours)  
-);
-
-CREATE TABLE AUDITORIA (
-  id_cliente NUMBER NOT NULL,
-  id_pais NUMBER NOT NULL,
-  identificacion NUMBER NOT NULL,
-  primer_nombre VARCHAR2(250) NOT NULL,
-  segundo_nombre VARCHAR2(250) NOT NULL,
-  primer_apellido VARCHAR2(250) NOT NULL,
-  segundo_apellido VARCHAR2(250) NOT NULL,
-  correo VARCHAR2(250) NOT NULL,
-  edad NUMBER NOT NULL,
-  telefono NUMBER NOT NULL,
-  ciudad VARCHAR2(250) NOT NULL,
-  direccion VARCHAR2(250) NOT NULL,
-  fecha_ingreso DATE,
-  CONSTRAINT pk_id_cliente PRIMARY KEY (id_usuario),
-  CONSTRAINT fk_aud_id_pais
-    FOREIGN KEY(id_pais)
-    REFERENCES PAIS(id_pais)
-);
 
 -----CREACION DE LAS VISTAS----
 
@@ -930,4 +868,118 @@ INSERT INTO DESTINOS_TOURS VALUES (10, 7);
 INSERT INTO DESTINOS_TOURS VALUES (16, 8);
 INSERT INTO DESTINOS_TOURS VALUES (16, 9);
 INSERT INTO DESTINOS_TOURS VALUES (11, 10);
+
+
+-- -----------------------------------------------------
+-- PROCESO DE MODIFICACION DEL MODELO DE DATOS DE TOURINY
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- 1- CREACION DE NUEVAS TABLAS
+-- -----------------------------------------------------
+
+--REVIEWS
+CREATE TABLE REVIEWS (
+  id_review NUMBER NOT NULL,
+  id_cliente NUMBER NOT NULL,
+  id_tour NUMBER NOT NULL,
+  descripcion VARCHAR2(250),
+  calificacion NUMBER,
+  fecha_review DATE,
+  CONSTRAINT pk_id_reviews PRIMARY KEY (id_review),
+  CONSTRAINT fk_id_rev_client
+    FOREIGN KEY (id_cliente)
+    REFERENCES CLIENTES(id_cliente),
+  CONSTRAINT fk_id_rev_tour
+    FOREIGN KEY (id_tour)
+    REFERENCES TOURS(id_tours)  
+);
+
+/*
+--AUDITORIA
+CREATE TABLE AUDITORIA (
+  id_cliente NUMBER NOT NULL,
+  id_pais NUMBER NOT NULL,
+  identificacion NUMBER NOT NULL,
+  primer_nombre VARCHAR2(250) NOT NULL,
+  segundo_nombre VARCHAR2(250) NOT NULL,
+  primer_apellido VARCHAR2(250) NOT NULL,
+  segundo_apellido VARCHAR2(250) NOT NULL,
+  correo VARCHAR2(250) NOT NULL,
+  edad NUMBER NOT NULL,
+  telefono NUMBER NOT NULL,
+  ciudad VARCHAR2(250) NOT NULL,
+  direccion VARCHAR2(250) NOT NULL,
+  fecha_ingreso DATE
+);*/
+
+--CLIENTE_RESERVA
+CREATE TABLE CLIENTE_RESERVA(
+  id_cliente1 NUMBER NOT NULL,
+  id_reserva2 NUMBER NOT NULL,
+  fecha_reserva DATE NOT NULL,
+  precio NUMBER(15,2) DEFAULT 0 NOT NULL,
+  CONSTRAINT pk_cli_reserva PRIMARY KEY (id_cliente1, id_reserva2),
+  CONSTRAINT fk_id_cliente1 FOREIGN KEY (id_cliente1)
+    REFERENCES CLIENTES (id_cliente),
+  CONSTRAINT fk_reserva2 FOREIGN KEY (id_reserva2)
+    REFERENCES RESERVACION (id_reserva)
+);
+
+
+
+-- -----------------------------------------------------
+-- 2- MODIFICACION DE LAS TABLAS
+-- -----------------------------------------------------
+
+--CLIENTES
+ALTER TABLE CLIENTES 
+  ADD (
+    ciudad VARCHAR2(45),
+    direccion VARCHAR2(250),
+    fecha_nacimiento DATE,
+    sexo VARCHAR2(45),
+    fecha_ingreso DATE
+  );
+
+
+-- -----------------------------------------------------
+-- TOURS
+-- -----------------------------------------------------
+
+ALTER TABLE TOURS
+  ADD (
+    status CHAR(2),
+    calificacion NUMBER(1) DEFAULT 0,
+    fecha_mod DATE,
+    CONSTRAINT c_status CHECK (status IN ('D','A','N'))
+  );
+
+-- -----------------------------------------------------
+-- RESERVACION
+-- -----------------------------------------------------
+
+ALTER TABLE RESERVACION
+  ADD (
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    status CHAR(2),
+    precio_total NUMBER(15,2) DEFAULT 0,
+    CONSTRAINT c_re_status CHECK (status IN ('P','C','A'))
+  );
+
+-- -----------------------------------------------------
+-- 3- MIGRACION AL NUEVO MODELO
+-- -----------------------------------------------------
+--COPIA DE DATOS RESERVACION --> CLIENTE_RESERVA
+INSERT INTO CLIENTE_RESERVA(id_cliente1,id_reserva2,fecha_reserva)
+  SELECT id_cliente, id_reserva,fecha_reserva
+    FROM RESERVACION;
+
+--ELIMINIACION DE COLUMNAS NO UTILIZADAS EN RESERVACION
+
+ALTER TABLE RESERVACION
+DROP COLUMN
+  id_cliente;
+
 
