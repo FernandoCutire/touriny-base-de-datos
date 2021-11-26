@@ -926,15 +926,15 @@ CREATE TABLE CLIENTE_RESERVA(
     REFERENCES RESERVACION (id_reserva)
 );
 
---TEMPORADAS
+--PROMOCIONES
 
-CREATE TABLE TEMPORADAS(
-  id_tempo NUMBER NOT NULL,
+CREATE TABLE PROMOCIONES(
+  id_promo NUMBER NOT NULL,
   descipcion NUMBER NOT NULL,
   mes_inicio NUMBER DEFAULT 0,
   mes_fin NUMBER DEFAULT 0,
-  descuento NUMBER DEFAULT 0,
-  CONSTRAINT pk_temporadas PRIMARY KEY (id_tempo)
+  promocion NUMBER DEFAULT 0,
+  CONSTRAINT pk_promocion PRIMARY KEY (id_promo)
 );
 
 
@@ -979,12 +979,12 @@ ALTER TABLE TOURS
   ADD (
     status CHAR(2),
     calificacion NUMBER(1) DEFAULT 0,
-    id_temporada NUMBER,
+    id_promo NUMBER,
     descuento NUMBER,
     fecha_mod DATE,
     CONSTRAINT c_status CHECK (status IN ('D','A','N')),
-    CONSTRAINT fk_temporada FOREIGN KEY (id_temporada)
-      REFERENCES TEMPORADAS (id_tempo)
+    CONSTRAINT fk_promo FOREIGN KEY (id_promo)
+      REFERENCES PROMOCIONES (id_promo)
   );
 
 -- -----------------------------------------------------
