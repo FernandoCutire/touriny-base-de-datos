@@ -1,0 +1,3 @@
+/*
+trigger cuando se crea un tour o se agrega un nuevo destino
+*/
