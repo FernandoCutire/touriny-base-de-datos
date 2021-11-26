@@ -926,11 +926,31 @@ CREATE TABLE CLIENTE_RESERVA(
     REFERENCES RESERVACION (id_reserva)
 );
 
+--TEMPORADAS
+
+CREATE TABLE TEMPORADAS(
+  id_tempo NUMBER NOT NULL,
+  descipcion NUMBER NOT NULL,
+  mes_inicio NUMBER DEFAULT 0,
+  mes_fin NUMBER DEFAULT 0,
+  descuento NUMBER DEFAULT 0,
+  CONSTRAINT pk_temporadas PRIMARY KEY (id_tempo)
+);
 
 
 -- -----------------------------------------------------
 -- 2- MODIFICACION DE LAS TABLAS
 -- -----------------------------------------------------
+--DESTINOS
+ALTER TABLE DESTINOS
+  ADD (
+    coordenadas VARCHAR2(200),
+    fecha_ingreso DATE
+  );
+
+--DESTINOS_TOURS
+ALTER TABLE DESTINOS_TOURS
+ ADD fecha_ingreso DATE;
 
 --CLIENTES
 ALTER TABLE CLIENTES 
@@ -942,6 +962,14 @@ ALTER TABLE CLIENTES
     fecha_ingreso DATE
   );
 
+-- GUIAS
+ALTER TABLE Guias
+  ADD(
+    direccion VARCHAR2(250),
+    fecha_nacimiento DATE,
+    sexo VARCHAR2(45),
+    fecha_ingreso DATE
+  );
 
 -- -----------------------------------------------------
 -- TOURS
@@ -951,8 +979,12 @@ ALTER TABLE TOURS
   ADD (
     status CHAR(2),
     calificacion NUMBER(1) DEFAULT 0,
+    id_temporada NUMBER,
+    descuento NUMBER,
     fecha_mod DATE,
-    CONSTRAINT c_status CHECK (status IN ('D','A','N'))
+    CONSTRAINT c_status CHECK (status IN ('D','A','N')),
+    CONSTRAINT fk_temporada FOREIGN KEY (id_temporada)
+      REFERENCES TEMPORADAS (id_tempo)
   );
 
 -- -----------------------------------------------------
