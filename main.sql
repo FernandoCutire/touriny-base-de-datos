@@ -896,23 +896,26 @@ CREATE TABLE REVIEWS (
     REFERENCES TOURS(id_tours)  
 );
 
-/*
+
 --AUDITORIA
 CREATE TABLE AUDITORIA (
+  id_auditoria NUMBER NOT NULL,
+  no_reserva NUMBER NOT NULL,
   id_cliente NUMBER NOT NULL,
-  id_pais NUMBER NOT NULL,
-  identificacion NUMBER NOT NULL,
-  primer_nombre VARCHAR2(250) NOT NULL,
-  segundo_nombre VARCHAR2(250) NOT NULL,
-  primer_apellido VARCHAR2(250) NOT NULL,
-  segundo_apellido VARCHAR2(250) NOT NULL,
-  correo VARCHAR2(250) NOT NULL,
-  edad NUMBER NOT NULL,
-  telefono NUMBER NOT NULL,
-  ciudad VARCHAR2(250) NOT NULL,
-  direccion VARCHAR2(250) NOT NULL,
-  fecha_ingreso DATE
-);*/
+  id_tour NUMBER NOT NULL,
+  fecha_reserva DATE NOT NULL,
+  cantidad_personas NUMBER NOT NULL,
+  cantidad_tours NUMBER NOT NULL,
+  fecha_inicio NUMBER NOT NULL,
+  fecha_fin NUMBER NOT NULL,
+  status Char(2) NOT NULL,
+  precio_total NUMBER NOT NULL,
+  usuario VARCHAR2(250) NOT NULL,
+  fecha_insercion DATE NOT NULL,
+  CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
+  CONSTRAINT auditoria_RESERVACION_fk FOREIGN KEY (no_reserva)
+      REFERENCES RESERVACION (id_reserva)
+);
 
 
 
@@ -972,7 +975,7 @@ ALTER TABLE Guias
 
 ALTER TABLE TOURS
   ADD (
-    status CHAR(2),
+    status CHAR(2) NOT NULL,
     calificacion NUMBER(1) DEFAULT 0,
     id_promo NUMBER,
     descuento NUMBER,
