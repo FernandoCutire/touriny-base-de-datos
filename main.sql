@@ -85,11 +85,12 @@ CREATE TABLE RESERVACION (id_reserva NUMBER NOT NULL,
 -- Table reserva_tours
 -- -----------------------------------------------------
 
-CREATE TABLE RESERVA_TOURS (id_reserva1 NUMBER NOT NULL,
+CREATE TABLE RESERVA_TOURS (
+  id_reserva1 NUMBER NOT NULL,
   id_tour1 NUMBER NOT NULL,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE NOT NULL,
-  PRIMARY KEY (id_reserva1,id_tour1),
+  CONSTRAINT pk_reserva_tour PRIMARY KEY (id_reserva1,id_tour1),
   CONSTRAINT fk_reserva1
     FOREIGN KEY (id_reserva1)
     REFERENCES RESERVACION (id_reserva),
@@ -913,18 +914,7 @@ CREATE TABLE AUDITORIA (
   fecha_ingreso DATE
 );*/
 
---CLIENTE_RESERVA
-CREATE TABLE CLIENTE_RESERVA(
-  id_cliente1 NUMBER NOT NULL,
-  id_reserva2 NUMBER NOT NULL,
-  fecha_reserva DATE NOT NULL,
-  precio NUMBER(15,2) DEFAULT 0 NOT NULL,
-  CONSTRAINT pk_cli_reserva PRIMARY KEY (id_cliente1, id_reserva2),
-  CONSTRAINT fk_id_cliente1 FOREIGN KEY (id_cliente1)
-    REFERENCES CLIENTES (id_cliente),
-  CONSTRAINT fk_reserva2 FOREIGN KEY (id_reserva2)
-    REFERENCES RESERVACION (id_reserva)
-);
+
 
 --PROMOCIONES
 
@@ -950,7 +940,12 @@ ALTER TABLE DESTINOS
 
 --DESTINOS_TOURS
 ALTER TABLE DESTINOS_TOURS
- ADD fecha_ingreso DATE;
+ ADD (
+   precio_tour NUMBER,
+   cantidad_personas number,
+   status char(2),
+   fecha_ingreso date
+ );
 
 --CLIENTES
 ALTER TABLE CLIENTES 
@@ -990,28 +985,19 @@ ALTER TABLE TOURS
 -- -----------------------------------------------------
 -- RESERVACION
 -- -----------------------------------------------------
-
+--Estatus: PENDIENTE, CONFIRMADA, CANCELADA.
 ALTER TABLE RESERVACION
   ADD (
     fecha_inicio DATE,
     fecha_fin DATE,
     status CHAR(2),
     precio_total NUMBER(15,2) DEFAULT 0,
-    CONSTRAINT c_re_status CHECK (status IN ('P','C','A'))
+    CONSTRAINT c_re_status CHECK (status IN ('PE','CO','CA'))
   );
 
 -- -----------------------------------------------------
 -- 3- MIGRACION AL NUEVO MODELO
 -- -----------------------------------------------------
---COPIA DE DATOS RESERVACION --> CLIENTE_RESERVA
-INSERT INTO CLIENTE_RESERVA(id_cliente1,id_reserva2,fecha_reserva)
-  SELECT id_cliente, id_reserva,fecha_reserva
-    FROM RESERVACION;
 
---ELIMINIACION DE COLUMNAS NO UTILIZADAS EN RESERVACION
-
-ALTER TABLE RESERVACION
-DROP COLUMN
-  id_cliente;
 
 
