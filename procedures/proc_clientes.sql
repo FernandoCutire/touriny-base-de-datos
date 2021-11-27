@@ -50,6 +50,70 @@ END registroCliente;
 -- 2- Proc Registro de reserva del cliente
 -- -----------------------------------------------------
 
+CREATE OR REPLACE PROCEDURE registroReserva(
+    p_id_cliente         IN clientes.id_cliente%TYPE,
+    p_id_tour            IN tours.id_tour%TYPE,
+    p_cantidad_personas  IN reserva_tours.cantidad_personas%TYPE,
+    p_fecha_inicio       IN reserva_tours.fecha_inicio%TYPE
+    )
+
+IS 
+    intSeqVal number;
+    v_edad number(3) := calcularEdadCliente(p_fecha);
+    v_id_cliente number;
+    v_precio number;
+    v_status CHAR(2) := 'PE';
+    v_cantidad_max number;
+    v_cupos number;
+    limite_cupos_exeed EXCEPTION;
+    PRAGMA exeption_init(limite_cupos_exeed, -20111);
+BEGIN
+
+    SELECT cantidad_cupos INTO v_cantidad_max 
+    FROM TOURS
+    WHERE id_tour = p_id_tour;
+
+    SELECT SUM(cantidad_personas) INTO v_cupos
+    FROM RESERVA_TOURS
+    WHERE id_tour1 = p_id_tour
+    AND fecha_inicio = p_fecha_inicio
+    AND status = 'PE');
+
+    IF v_cupos > v_cantidad_max THEN
+        raise_application_error(-20111,'Limite de cupos exedido.');
+    ELSE
+    --antes de la insercion se valida con el trigger ValidarCupos
+    INSERT INTO RESERVACION(
+        id_cliente,
+        fecha_reserva,
+        status)
+        VALUES (
+        p_id_cliente,
+        sysdate,
+        v_status);
+
+    select precio into v_precio from tours where id_tour = p_id_tour;
+    INSERT INTO RESERVA_TOURS(
+        id_tour1,
+        fecha_inicio,
+        precio_tour,
+        cantidad_personas,
+        status,
+        fecha_ingreso)
+        VALUES(
+            p_id_tour,
+            p_fecha_inicio,
+            v_precio,
+            v_status,
+            sysdate
+        );
+    END IF;
+EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: .');
+END registroCliente;
+/
+
 
 -- -----------------------------------------------------
 -- 3- Proc Registro de reviews del cliente
