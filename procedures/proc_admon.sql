@@ -1,5 +1,5 @@
 -- -----------------------------------------------------
--- 1- Proc Registro del cliente
+-- 1- Proc Registro del guia
 -- -----------------------------------------------------
 CREATE OR REPLACE PROCEDURE registroGuia(
     p_dni         IN guia.dni%TYPE,
