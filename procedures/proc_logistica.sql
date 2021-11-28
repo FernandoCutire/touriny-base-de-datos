@@ -10,7 +10,7 @@ IS
     intSeqVal number;
 BEGIN
     select sec_id_destino.nextval into intSeqVal from dual;
-INSERT into REVIEWS VALUES (
+INSERT into DESTINOS VALUES (
     intSeqVal,
     p_nombre,
     p_coordenadas,
