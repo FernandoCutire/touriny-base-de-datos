@@ -900,7 +900,7 @@ CREATE TABLE REVIEWS (
 --AUDITORIA
 CREATE TABLE AUDITORIA (
   id_auditoria NUMBER NOT NULL,
-  no_reserva NUMBER NOT NULL,
+  id_reserva NUMBER NOT NULL,
   id_cliente NUMBER NOT NULL,
   id_tour NUMBER NOT NULL,
   fecha_reserva DATE NOT NULL,
@@ -913,10 +913,9 @@ CREATE TABLE AUDITORIA (
   usuario VARCHAR2(250) NOT NULL,
   fecha_insercion DATE NOT NULL,
   CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
-  CONSTRAINT auditoria_RESERVACION_fk FOREIGN KEY (no_reserva)
+  CONSTRAINT auditoria_RESERVACION_fk FOREIGN KEY (id_reserva)
       REFERENCES RESERVACION (id_reserva)
 );
-
 
 
 --PROMOCIONES

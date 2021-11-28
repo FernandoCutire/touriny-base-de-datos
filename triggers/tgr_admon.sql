@@ -34,11 +34,44 @@ END;
 Actualización de datos de la tabla de auditoria. 	
 */
 
-CREATE OR REPLACE TRIGGER "ACTUALIZAR_TABLA_AUDITORIA"
-AFTER INSERT OR UPDATE ON RESERVACION
-FOR EACH ROW
-DECLARE
-BEGIN
+CREATE OR REPLACE TRIGGER ACTUALIZAR_TABLA_AUDITORIA
 
-END;
+AFTER INSERT, UPDATE OR DELETE 
+ON RESERVACION
+FOR EACH ROW
+
+
+BEGIN
+  id_auditoria
+  id_reserva
+  id_cliente
+  id_tour
+  fecha_reserva
+  cantidad_personas
+  cantidad_tours
+  fecha_inicio
+  fecha_fin
+  status
+  precio_total
+  usuario,
+  fecha_insercion
+  UPDATE AUDITORIA
+    SET
+      id_reserva = :NEW.id_reserva,
+      id_cliente = :NEW.id_cliente,
+      id_tour = :NEW.id_tour,
+      fecha_reserva = :NEW.fecha_reserva,
+      cantidad_personas = :NEW.cantidad_personas,
+      cantidad_tours = :NEW.cantidad_tours,
+      fecha_inicio = :NEW.fecha_inicio,
+      fecha_fin = :NEW.fecha_fin,
+      precio_total = :NEW.precio_total,
+      usuario = :NEW.usuario,
+      fecha_insercion = :NEW.fecha_insercion,
+      WHERE id_auditoria = :NEW.id_auditoria;
+
+EXCEPTION
+-- Inicio de la sección de excepciones
+
+END ACTUALIZAR_TABLA_AUDITORIA;
 /
