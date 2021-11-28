@@ -102,15 +102,21 @@ END staff_tours;
 
 
 -- -----------------------------------------------------
--- 3- Proceso de actualización de reservas.
+-- Proceso de actualización de reservas.
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE actualizacion_reservas (
-
-
-
+    pk_id_reserva         IN reservacion.id_reserva%TYPE,
 )
 BEGIN
+UPDATE INTO RESERVA_TOURS VALUES(
+    p_id_reserva
+)
+COMMIT;
+
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: El guia no se puedo registrar')
 
 
 END actualizacion_reservas
