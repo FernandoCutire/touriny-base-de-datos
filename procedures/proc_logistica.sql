@@ -10,7 +10,7 @@ IS
     intSeqVal number;
 BEGIN
     select sec_id_destino.nextval into intSeqVal from dual;
-INSERT into REVIEWS VALUES (
+INSERT into DESTINOS VALUES (
     intSeqVal,
     p_nombre,
     p_coordenadas,
@@ -23,6 +23,7 @@ EXCEPTION
 END registroDestino;
 /
 
+EXECUTE registroDestino('Canal de Panamá','-79.5926900 y 8.9979700');
 
 -- -----------------------------------------------------
 -- 2- Proc Registro de los tours
