@@ -126,7 +126,7 @@ CREATE TABLE DESTINOS_TOURS (
 -----CREACION DE LAS VISTAS----
 
 -- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
-
+/*
  CREATE VIEW VISTA_1_CUATRIMESTRE 
  AS SELECT TO_CHAR(fecha_reserva, 'Q') as "Cuatrimestre", COUNT(fecha_reserva) as "Cantidad" FROM reservacion
 GROUP BY TO_CHAR(fecha_reserva, 'Q') 
@@ -190,7 +190,7 @@ FROM Guias g
     INNER JOIN TOURS t ON g.id_guia = t.id_guia
     GROUP BY g.nombre1, g.apellido1
     ORDER BY COUNT(t.id_guia) DESC;
-
+*/
 
 
 ---- INSERT PARA LAS TABLAS---
@@ -1001,10 +1001,10 @@ ALTER TABLE RESERVA_TOURS
     cantidad_personas number,
     status char(2),
     fecha_ingreso date
-  )
+  );
 
 ALTER TABLE RESERVA_TOURS
-  DROP CONSTRAINT pk_reserva_tour; 
+DROP CONSTRAINT pk_reserva_tour; 
 -- -----------------------------------------------------
 -- 3- MIGRACION AL NUEVO MODELO
 -- -----------------------------------------------------
@@ -1033,6 +1033,7 @@ ALTER TABLE RESERVACION
 
 --------------------------------------------------
 ---La nueva implementacion de los procesos
+-- TODO NO CORRER TODAVIA
 --------------------------------------------------
 
 set SERVEROUTPUT on;
