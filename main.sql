@@ -126,7 +126,7 @@ CREATE TABLE DESTINOS_TOURS (
 -----CREACION DE LAS VISTAS----
 
 -- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
-
+/*
  CREATE VIEW VISTA_1_CUATRIMESTRE 
  AS SELECT TO_CHAR(fecha_reserva, 'Q') as "Cuatrimestre", COUNT(fecha_reserva) as "Cantidad" FROM reservacion
 GROUP BY TO_CHAR(fecha_reserva, 'Q') 
@@ -190,7 +190,7 @@ FROM Guias g
     INNER JOIN TOURS t ON g.id_guia = t.id_guia
     GROUP BY g.nombre1, g.apellido1
     ORDER BY COUNT(t.id_guia) DESC;
-
+*/
 
 
 ---- INSERT PARA LAS TABLAS---
@@ -1001,11 +1001,46 @@ ALTER TABLE RESERVA_TOURS
     cantidad_personas number,
     status char(2),
     fecha_ingreso date
-  )
+  );
+
+ALTER TABLE RESERVA_TOURS
+DROP CONSTRAINT pk_reserva_tour; 
 -- -----------------------------------------------------
 -- 3- MIGRACION AL NUEVO MODELO
 -- -----------------------------------------------------
+-- COPIANDO cantidad_personas DATOS DE RESERVACION --> HACIA RESERVA TOUR
+UPDATE reserva_tours 
+    SET cantidad_personas = (
+        SELECT cantidad_personas
+        FROM reservacion
+        WHERE reservacion.id_reserva = reserva_tours.id_reserva1
+    );
+
+--COPIANDO el precio DATOS DE TOURS --> HACIA RESERVA TOURS
+UPDATE reserva_tours 
+    SET precio_tour = (
+        SELECT precio
+        FROM tours
+        WHERE tours.id_tours = reserva_tours.id_tour1
+    );
+
+--ELIMININACION DE LOS VALORES NO NECESARIOS EN LA TABLA DE RESERVACION
+ALTER TABLE RESERVACION
+  DROP COLUMN cantidad_personas;
 
 
 
 
+--------------------------------------------------
+---La nueva implementacion de los procesos
+-- TODO NO CORRER TODAVIA
+--------------------------------------------------
+
+set SERVEROUTPUT on;
+
+--INVOCACION: REGISTRO DE LA RESERVA DEL CLIENTE
+execute registroReserva(9333,1, 5,'28-nov-21');
+    p_id_cliente         
+    p_id_tour            
+    p_cantidad_personas  
+    p_fecha_inicio       
