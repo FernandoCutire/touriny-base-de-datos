@@ -851,6 +851,25 @@ INSERT INTO DESTINOS VALUES (15,'Calzada amador');
 INSERT INTO DESTINOS VALUES (16,'Bocas del Toro');
 
 
+/*
+EXECUTE registroDestino('Canal de Panamá', '9.14369608292388, -79.73955911092854');
+EXECUTE registroDestino('Biomuseo', '8.933175183920792, -79.54472113068768');
+EXECUTE registroDestino('Casco Antiguo', '8.952929715885642, -79.53602427050633');
+EXECUTE registroDestino('Panamá Viejo', '9.006795767655342, -79.48521125249091');
+EXECUTE registroDestino('Portobelo', '9.553700513834134, -79.6571566187573');
+EXECUTE registroDestino('San Blas', '9.588879656128823, -78.70181560341317');
+EXECUTE registroDestino('Isla Grande', '9.635207710011752, -79.5647800721087');
+EXECUTE registroDestino('Valle de Antón', '8.617642361667896, -80.13350501585857');
+EXECUTE registroDestino('Cerro Azul', '9.231093376931321, -79.40849646702256');
+EXECUTE registroDestino('Volcán Barú', '8.809192431066274, -82.54293986928006');
+EXECUTE registroDestino('Archipiélago de las perlas', '8.488942531158493, -78.97550508992742');
+EXECUTE registroDestino('Boquete', '8.777260734178117, -82.44951807768413');
+EXECUTE registroDestino('Cerro Ancón', '8.95997475718351, -79.547817779238433');
+EXECUTE registroDestino('Punta chame', '8.642885653161462, -79.70915821101356');
+EXECUTE registroDestino('Calzada amador', '8.915900202565433, -79.53301257587526');
+EXECUTE registroDestino('Bocas del Toro', '9.290079231354605, -82.67968961046321'); 
+*/
+
 ----Trigger----
 ----DESTINOS_TOURS---
 INSERT INTO DESTINOS_TOURS VALUES (1, 1);
