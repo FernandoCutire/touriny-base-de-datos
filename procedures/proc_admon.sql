@@ -85,11 +85,11 @@ END registroGuia;
 -- 1- Proc de registro de staff para los tours
 -- -----------------------------------------------------
 CREATE OR REPLACE PROCEDURE staff_tours(
-    p_id_guia    IN guia.id_guia%TYPE, 
+    p_id_guia    IN     guia.id_guia%TYPE
 ) 
 BEGIN
 INSERT into TOURS VALUES (
-    p_uid_guia
+    p_id_guia
 );
 COMMIT;
 
@@ -99,25 +99,26 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('💣 Error: El guia no se puedo registrar')
 
 END staff_tours;
-
+/
 
 -- -----------------------------------------------------
 -- Proceso de actualización de reservas.
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE actualizacion_reservas (
-    pk_id_reserva         IN reservacion.id_reserva%TYPE,
+    p_id_reserva         IN reservacion.id_reserva%TYPE
 )
 BEGIN
 UPDATE INTO RESERVA_TOURS VALUES(
     p_id_reserva
 )
+
 COMMIT;
 
 EXCEPTION
     WHEN DUP_VAL_ON_INDEX THEN
-        DBMS_OUTPUT.PUT_LINE('💣 Error: El guia no se puedo registrar')
+        DBMS_OUTPUT.PUT_LINE('💣 Error: La reserva no se puede actualizar.')
 
 
 END actualizacion_reservas
-
+/
