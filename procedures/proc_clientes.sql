@@ -65,19 +65,28 @@ IS
     v_cantidad_max number;
     v_cupos number;
     limite_cupos_exeed EXCEPTION;
+    v_dias number;
+    v_horas number;
     PRAGMA exception_init(limite_cupos_exeed, -20111);
 BEGIN
 
+--validacion de no exceder el maximo de personas por solicitud y que la fecha
+--de inicio del tour sea mayor a la fecha de solicutud. por lo menos 24h antes.
+IF p_cantidad_personas <= 10 AND p_fecha_inicio > sysdate THEN
+    --se extraen la cantidad maxima de personas del id tour ingresado.
     SELECT cantidad_cupos INTO v_cantidad_max 
     FROM TOURS
     WHERE id_tours = p_id_tour;
 
+    --se realiza una sumatoria con las condiciones del id tour ingresado.
+    --si el tour esta en estado pendiente y si esta en la misma fecha.
     SELECT SUM(cantidad_personas) INTO v_cupos
     FROM RESERVA_TOURS
     WHERE id_tour1 = p_id_tour
     AND fecha_inicio = p_fecha_inicio
     AND status = 'PE';
 
+    --el numero de perosnas para un dia, no puede exeder el limite de personas del tour.
     IF v_cupos > v_cantidad_max THEN
         raise_application_error(-20111,'Limite de cupos exedido.');
     ELSE
@@ -94,7 +103,14 @@ BEGIN
         sysdate,
         v_status);
 
+    --extrae el precio del tour seleccionado;
     select precio into v_precio from tours where id_tours = p_id_tour;
+    --extrae la duracion del tour selecionado.
+    select duracion into v_horas from tours where id_tours = p_id_tour;
+    --conversion de las horas de duracion a -> dias.
+    v_dias := calcularhoras(v_horas);
+
+    --FINALIZA LA TRANSACCION INSERTANTO LOS VALORES EN RESERVA_TOUR.
     INSERT INTO RESERVA_TOURS(
         id_reserva1,
         id_tour1,
@@ -108,18 +124,21 @@ BEGIN
             intseqval,
             p_id_tour,
             to_date(p_fecha_inicio,'dd-mm-yy'),
-            to_date(p_fecha_inicio,'dd-mm-yy'),
+            to_date(p_fecha_inicio,'dd-mm-yy') + v_dias,
             v_precio,
             p_cantidad_personas,
             v_status,
             sysdate
         );
     END IF;
+ELSE
+    DBMS_OUTPUT.PUT_LINE('💣 Advertencia: El numero maximo de personas es 10. Validar fecha de inicio.');
+END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: .');
     WHEN limite_cupos_exeed THEN
-        DBMS_OUTPUT.PUT_LINE('SIN CUPOS');
+        DBMS_OUTPUT.PUT_LINE('💣 Advertencia: Cupos agotados para este tour. Elija una fecha diferente.');
 END registroReserva;
 /
 
