@@ -85,21 +85,13 @@ END registroGuia;
 -- 1- Proc de registro de staff para los tours
 -- -----------------------------------------------------
 CREATE OR REPLACE PROCEDURE staff_tours(
-    p_id_guia    IN guia.id_guia%TYPE,
-    p_dni         IN guia.dni%TYPE,
-    p_Nombre1     IN guia.nombre1%TYPE,
-    p_apellido1   IN guia.apellido1%TYPE,
-    p_email       IN guia.email%TYPE,
-    p_telefono    IN guia.telefono%TYPE,
-    p_ciudad      IN guia.ciudad%TYPE,
-    p_direccion   IN guia.direccion%TYPE,
-    p_sexo        IN guia.sexo%TYPE,
-    p_fecha       IN guia.fecha_nacimiento%TYPE 
+    p_id_guia    IN guia.id_guia%TYPE, 
 ) 
-IS
 BEGIN
-    
-
+INSERT into TOURS VALUES (
+    p_uid_guia
+);
+COMMIT;
 
 
 EXCEPTION
@@ -111,9 +103,29 @@ END staff_tours;
 -- -----------------------------------------------------
 -- 2- Proceso de Asignación de fechas de los tours.
 -- -----------------------------------------------------
+CREATE OR REPLACE PROCEDURE fecha_tours (
+
+
+)
+
+
+
+END fecha_tours
+
 
 
 
 -- -----------------------------------------------------
 -- 3- Proceso de actualización de reservas.
 -- -----------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE actualizacion_reservas (
+
+
+
+)
+BEGIN
+
+
+END actualizacion_reservas
+
