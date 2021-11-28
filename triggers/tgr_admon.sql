@@ -29,3 +29,7 @@ BEGIN
     :new.id_reserva1 := reserva_id;
 END;
 /
+
+/*
+Actualización de datos de la tabla de auditoria. 	
+*/
