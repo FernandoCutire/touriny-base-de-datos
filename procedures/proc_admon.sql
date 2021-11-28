@@ -100,20 +100,6 @@ EXCEPTION
 
 END staff_tours;
 
--- -----------------------------------------------------
--- 2- Proceso de Asignación de fechas de los tours.
--- -----------------------------------------------------
-CREATE OR REPLACE PROCEDURE fecha_tours (
-
-
-)
-
-
-
-END fecha_tours
-
-
-
 
 -- -----------------------------------------------------
 -- 3- Proceso de actualización de reservas.
