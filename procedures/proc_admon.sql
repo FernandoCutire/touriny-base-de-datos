@@ -80,11 +80,10 @@ EXCEPTION
 END registroGuia;
 /
 
-
-
 -- -----------------------------------------------------
 -- 2- Proceso de Asignación de fechas de los tours.
 -- -----------------------------------------------------
+
 
 
 
