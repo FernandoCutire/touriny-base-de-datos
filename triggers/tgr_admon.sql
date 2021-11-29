@@ -35,30 +35,46 @@ Actualización de datos de la tabla de auditoria.
 */
 CREATE OR REPLACE TRIGGER ACTUALIZAR_AUDITORIA
 AFTER INSERT OR UPDATE 
-ON RESERVACION_TOUR
+ON RESERVA_TOURS
 FOR EACH ROW
 
 BEGIN
 IF INSERTING THEN
 
-INSERT INTO AUDITORIA(
-id_auditoria,
-id_reserva,
-id_cliente,
-id_tour,
-fecha_reserva,
-cantidad_personas,
-cantidad_tours,
-fecha_inicio,
-fecha_fin,
-precio_total,
-usuario,
-fecha_insercion)
-VALUES (sec_cod_aut.nextval, :NEW.ID_RESERVA, :NEW.id_cliente, :NEW.id_tour, :NEW.fecha_reserva, :NEW.cantidad_personas, :NEW.cantidad_tours, :NEW.fecha_inicio, NEW.fecha_fin, :NEW.precio_total, USER, SYSDATE);
+INSERT INTO AUDITORIA VALUES (
+  sec_cod_aut.nextval,
+  :new.id_reserva1,
+  :new.id_tour1,
+  'I',
+  'RESERVA_TOUR',
+  :new.cantidad_personas,
+  :new.fecha_inicio,
+  :new.fecha_fin,
+  :new.status,
+  :new.precio_tour,
+  USER,
+  SYSDATE);
 
+ELSIF UPDATING THEN
+
+INSERT INTO AUDITORIA VALUES (
+  sec_cod_aut.nextval,
+  :new.id_reserva1,
+  :new.id_tour1,
+  'U',
+  'RESERVA_TOUR',
+  :new.cantidad_personas,
+  :new.fecha_inicio,
+  :new.fecha_fin,
+  :new.status,
+  :new.precio_tour,
+  USER,
+  SYSDATE);
 END IF;
 
-
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+  DBMS_OUTPUT.PUT_LINE('Erro numero:');
 END ACTUALIZAR_AUDITORIA;
 /
 

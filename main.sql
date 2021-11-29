@@ -513,14 +513,12 @@ CREATE TABLE REVIEWS (
 CREATE TABLE AUDITORIA (
   id_auditoria NUMBER NOT NULL,
   no_reserva NUMBER,
-  id_cliente NUMBER,
   id_tour NUMBER,
   tipo_operacion CHAR(2),
-  fecha_reserva DATE,
+  tabla varchar2(45),
   cantidad_personas NUMBER,
-  cantidad_tours NUMBER,
-  fecha_inicio NUMBER,
-  fecha_fin NUMBER,
+  fecha_inicio DATE,
+  fecha_fin DATE,
   status Char(2),
   precio_total NUMBER,
   usuario VARCHAR2(250),
@@ -529,7 +527,6 @@ CREATE TABLE AUDITORIA (
   CONSTRAINT auditoria_RESERVACION_fk FOREIGN KEY (no_reserva)
       REFERENCES RESERVACION (id_reserva)
 );
-
 
 
 --PROMOCIONES
@@ -1199,6 +1196,55 @@ BEGIN
 END facturacion;
 /
 
+-------------------------------------------------------------------------
+-- TRIGGER DE ACTUALIZACION DE AUDITORIA
+------------------------------------------------------------------------
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_AUDITORIA
+AFTER INSERT OR UPDATE 
+ON RESERVA_TOURS
+FOR EACH ROW
+
+BEGIN
+IF INSERTING THEN
+
+INSERT INTO AUDITORIA VALUES (
+  sec_cod_aut.nextval,
+  :new.id_reserva1,
+  :new.id_tour1,
+  'I',
+  'RESERVA_TOUR',
+  :new.cantidad_personas,
+  :new.fecha_inicio,
+  :new.fecha_fin,
+  :new.status,
+  :new.precio_tour,
+  USER,
+  SYSDATE);
+
+ELSIF UPDATING THEN
+
+INSERT INTO AUDITORIA VALUES (
+  sec_cod_aut.nextval,
+  :new.id_reserva1,
+  :new.id_tour1,
+  'U',
+  'RESERVA_TOUR',
+  :new.cantidad_personas,
+  :new.fecha_inicio,
+  :new.fecha_fin,
+  :new.status,
+  :new.precio_tour,
+  USER,
+  SYSDATE);
+END IF;
+
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+  DBMS_OUTPUT.PUT_LINE('Erro numero:');
+END ACTUALIZAR_AUDITORIA;
+/
+
 
 
 
@@ -1718,7 +1764,7 @@ FROM TOURS t
 
 
 
--- 9 
+-- 9 PROMOCIONES DEL TOUR
 
 CREATE VIEW VISTA_9_PROMOCIONES 
 AS SELECT p.descripcion AS "Promociones del tour", COUNT(t.id_promo) AS "Cantidad de tour"
@@ -1728,4 +1774,11 @@ ON p.id_promo = t.id_promo
 GROUP BY p.descripcion
 ORDER BY COUNT(t.ID_PROMO) DESC;
 
+--10 MONTO DE FACTURACIÓN
 
+CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT (r.fecha_reserva) as "FECHA", COUNT(f.monto_pago) "MONTO"
+FROM RESERVACION r
+    INNER JOIN FACTURACION f ON f.id_reserva = r.id_reserva 
+    GROUP BY r.fecha_reserva
+    ORDER BY COUNT(f.monto_pago) DESC;
+    
