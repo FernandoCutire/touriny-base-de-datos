@@ -150,7 +150,7 @@ END registroReserva;
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE registroReview(
-    p_ciente          IN reviews.id_cliente%TYPE,
+    p_cLiente          IN reviews.id_cliente%TYPE,
     p_tour            IN reviews.id_tour%TYPE,
     p_descripcion     IN reviews.descripcion%TYPE,
     p_calificacion    IN reviews.calificacion%TYPE
@@ -162,7 +162,7 @@ BEGIN
     select sec_id_review.nextval into intSeqVal from dual;
 INSERT into REVIEWS VALUES (
     intSeqVal,
-    p_ciente,
+    p_cliente,
     p_tour,
     p_descripcion,
     p_calificacion,
