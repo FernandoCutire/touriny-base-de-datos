@@ -122,6 +122,443 @@ CREATE TABLE DESTINOS_TOURS (
     REFERENCES TOURS (id_tours)
 );
 
+-- -----------------------------------------------------
+-- SECUENCIAS
+-- -----------------------------------------------------
+--SECUENCIAS DE ID DE TABLAS Clientes--
+CREATE SEQUENCE sec_id_cliente
+INCREMENT BY 1
+START WITH 14720
+NOMAXVALUE
+NOCYCLE;
+
+
+--SECUENCIAS DE LAS REVIEWS
+CREATE SEQUENCE sec_id_review
+START WITH 1
+INCREMENT BY 1
+NOMAXVALUE;
+
+--SECUENCIAS DE LOS DESTINOS--
+CREATE SEQUENCE sec_id_destino
+INCREMENT BY 1
+START WITH 17
+NOMAXVALUE
+NOCYCLE;
+
+--SECUENCIAS DE LOS DESTINOS--
+CREATE SEQUENCE sec_id_tour
+INCREMENT BY 1
+START WITH 11
+NOMAXVALUE
+NOCYCLE;
+
+--SECUENCIAS DE LOS GUIAS--
+CREATE SEQUENCE sec_id_guia
+INCREMENT BY 1
+START WITH 11
+NOMAXVALUE
+NOCYCLE;
+
+
+-- -----------------------------------------------------
+-- FUNCIONES
+-- -----------------------------------------------------
+
+/*
+Funcion para calcula edad
+*/
+CREATE OR REPLACE FUNCTION calcularEdadCliente(p_fecha date)
+RETURN NUMBER IS 
+v_clienteEdad number(3);
+v_fecha date := p_fecha;
+BEGIN
+  -- Necesitamos eso en años
+  v_clienteEdad := (SYSDATE - v_fecha) / 365;
+
+  RETURN v_clienteEdad;
+  
+  EXCEPTION
+   WHEN ZERO_DIVIDE THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: Fecha no valida.');
+END calcularEdadCliente;
+/
+
+--Funcion para calcular horas
+create or replace function calcularhoras(l_horas number)
+return number IS
+v_dias number;
+
+BEGIN
+
+if l_horas/24 <= 1 then
+v_dias := 1;
+elsif l_horas/24 > 1 and l_horas/24 <= 2 THEN
+v_dias := 2;
+elsif l_horas/24 >2 and l_horas/24 <=3 THEN
+v_dias := 3;
+end if;
+
+return v_dias;
+EXCEPTION
+   WHEN ZERO_DIVIDE THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: hora ingresada no valida.');
+END calcularhoras;
+/
+
+
+
+--invocacion para probar la funcion.
+DECLARE
+horas number := 49;
+dias number;
+BEGIN
+dias := calcularhoras(horas);
+
+DBMS_OUTPUT.PUT_LINE('LOS DIAS SON: ' || dias);
+END;
+
+
+
+-- -----------------------------------------------------
+-- PROCEDIMIENTOS
+-- -----------------------------------------------------
+
+--CLIENTES
+
+-- -----------------------------------------------------
+-- 1- Proc Registro del cliente
+-- Primero correr funcion calcularEdad
+-- -----------------------------------------------------
+CREATE OR REPLACE PROCEDURE registroCliente(
+    p_dni         IN clientes.dni%TYPE,
+    p_Nombre1     IN clientes.nombre1%TYPE,
+    p_Nombre2     IN clientes.nombre2%TYPE,
+    p_apellido1   IN clientes.apellido1%TYPE,
+    p_apellido2   IN clientes.apellido2%TYPE,
+    p_email       IN clientes.email%TYPE,
+    p_telefono    IN clientes.telefono%TYPE,
+    p_fecha       IN clientes.fecha_nacimiento%TYPE,
+    p_sexo        IN clientes.sexo%TYPE,
+    p_pais        IN clientes.cod_pais%TYPE,
+    p_ciudad      IN clientes.ciudad%TYPE,
+    p_direccion   IN clientes.direccion%TYPE
+    )
+
+IS 
+    intSeqVal number;
+    v_edad number(3) := calcularEdadCliente(p_fecha);
+BEGIN
+    select sec_id_cliente.nextval into intSeqVal from dual;
+INSERT into CLIENTES VALUES (
+    intSeqVal,
+    p_dni,
+    p_Nombre1,
+    p_Nombre2,
+    p_apellido1,
+    p_apellido2,
+    p_email,
+    p_telefono,
+    v_edad,
+    p_pais,
+    p_ciudad,
+    p_direccion,
+    to_date(p_fecha,'DD-MM-YYYY'),
+    p_sexo,
+    sysdate
+    );
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
+END registroCliente;
+/
+
+
+-- -----------------------------------------------------
+-- 2- Proc Registro de reserva del cliente
+-- Correr primer calcular horas
+-- -----------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE registroReserva(
+    p_id_cliente         IN clientes.id_cliente%TYPE,
+    p_id_tour            IN reserva_tours.id_tour1%TYPE,
+    p_cantidad_personas  IN reserva_tours.cantidad_personas%TYPE,
+    p_fecha_inicio       IN reserva_tours.fecha_inicio%TYPE
+    )
+
+IS 
+    intSeqVal number;
+    v_id_cliente number;
+    v_precio number;
+    v_status CHAR(2) := 'PE';
+    v_cantidad_max number;
+    v_cupos number;
+    limite_cupos_exeed EXCEPTION;
+    v_dias number;
+    v_horas number;
+    PRAGMA exception_init(limite_cupos_exeed, -20111);
+BEGIN
+
+--validacion de no exceder el maximo de personas por solicitud y que la fecha
+--de inicio del tour sea mayor a la fecha de solicutud. por lo menos 24h antes.
+IF p_cantidad_personas <= 10 AND p_fecha_inicio > sysdate THEN
+    --se extraen la cantidad maxima de personas del id tour ingresado.
+    SELECT cantidad_cupos INTO v_cantidad_max 
+    FROM TOURS
+    WHERE id_tours = p_id_tour;
+
+    --se realiza una sumatoria con las condiciones del id tour ingresado.
+    --si el tour esta en estado pendiente y si esta en la misma fecha.
+    SELECT SUM(cantidad_personas) INTO v_cupos
+    FROM RESERVA_TOURS
+    WHERE id_tour1 = p_id_tour
+    AND fecha_inicio = p_fecha_inicio
+    AND status = 'PE';
+
+    --el numero de perosnas para un dia, no puede exeder el limite de personas del tour.
+    IF v_cupos > v_cantidad_max THEN
+        raise_application_error(-20111,'Limite de cupos exedido.');
+    ELSE
+    --antes de la insercion se valida con el trigger ValidarCupos
+    select sec_id_reserva.nextval into intseqval from dual;
+    INSERT INTO RESERVACION(
+        id_reserva,
+        id_cliente,
+        fecha_reserva,
+        status)
+        VALUES (
+            intseqval,
+        p_id_cliente,
+        sysdate,
+        v_status);
+
+    --extrae el precio del tour seleccionado;
+    select precio into v_precio from tours where id_tours = p_id_tour;
+    --extrae la duracion del tour selecionado.
+    select duracion into v_horas from tours where id_tours = p_id_tour;
+    --conversion de las horas de duracion a -> dias.
+    v_dias := calcularhoras(v_horas);
+
+    --FINALIZA LA TRANSACCION INSERTANTO LOS VALORES EN RESERVA_TOUR.
+    INSERT INTO RESERVA_TOURS(
+        id_reserva1,
+        id_tour1,
+        fecha_inicio,
+        fecha_fin,
+        precio_tour,
+        cantidad_personas,
+        status,
+        fecha_ingreso)
+        VALUES(
+            intseqval,
+            p_id_tour,
+            to_date(p_fecha_inicio,'dd-mm-yy'),
+            to_date(p_fecha_inicio,'dd-mm-yy') + v_dias,
+            v_precio,
+            p_cantidad_personas,
+            v_status,
+            sysdate
+        );
+    END IF;
+ELSE
+    DBMS_OUTPUT.PUT_LINE('💣 Advertencia: El numero maximo de personas es 10. Validar fecha de inicio.');
+END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: Advertencia: No se han encontrado datos.');
+    WHEN limite_cupos_exeed THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Advertencia: Cupos agotados para este tour. Elija una fecha diferente.');
+END registroReserva;
+/
+
+
+-- -----------------------------------------------------
+-- 3- Proc Registro de reviews del cliente
+-- -----------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE registroReview(
+    p_ciente          IN reviews.id_cliente%TYPE,
+    p_tour            IN reviews.id_tour%TYPE,
+    p_descripcion     IN reviews.descripcion%TYPE,
+    p_calificacion    IN reviews.calificacion%TYPE
+    )
+
+IS 
+    intSeqVal number;
+BEGIN
+    select sec_id_review.nextval into intSeqVal from dual;
+INSERT into REVIEWS VALUES (
+    intSeqVal,
+    p_ciente,
+    p_tour,
+    p_descripcion,
+    p_calificacion,
+    sysdate
+    );
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
+END registroReview;
+/
+
+
+
+--ADMINISTRACION
+-- -----------------------------------------------------
+-- 1- Proc Registro del guia
+-- Recordar correr la funcion calcularEdad y correr las secuencias
+-- -----------------------------------------------------
+CREATE OR REPLACE PROCEDURE registroGuia(
+    p_dni         IN guias.dni%TYPE,
+    p_Nombre1     IN guias.nombre1%TYPE,
+    p_apellido1   IN guias.apellido1%TYPE,
+    p_email       IN guias.email%TYPE,
+    p_telefono    IN guias.telefono%TYPE,
+    p_ciudad      IN guias.ciudad%TYPE,
+    p_direccion   IN guias.direccion%TYPE,
+    p_sexo        IN guias.sexo%TYPE,
+    p_fecha       IN guias.fecha_nacimiento%TYPE
+    )
+
+IS 
+    intSeqVal number;
+    v_edad number(3) := calcularEdadCliente(p_fecha);
+BEGIN
+    select sec_id_guia.nextval into intSeqVal from dual;
+INSERT into GUIAS VALUES (
+    intSeqVal,
+    p_dni,
+    p_Nombre1,
+    p_apellido1,
+    p_email,
+    p_telefono,
+    v_edad,
+    p_ciudad,
+    p_direccion,
+    to_date(p_fecha,'DD-MM-YYYY'),
+    p_sexo,
+    sysdate
+    );
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El guia ya existe.');
+END registroGuia;
+/
+
+--LOGISTICA
+
+-- -----------------------------------------------------
+-- 1- Proc Registro de destinos
+-- -----------------------------------------------------
+CREATE OR REPLACE PROCEDURE registroDestino(
+    p_nombre          IN destinos.destino_nombre%TYPE,
+    p_coordenadas     IN destinos.coordenadas%TYPE
+    )
+
+IS 
+    intSeqVal number;
+BEGIN
+    select sec_id_destino.nextval into intSeqVal from dual;
+INSERT into DESTINOS VALUES (
+    intSeqVal,
+    p_nombre,
+    p_coordenadas,
+    sysdate
+    );
+    COMMIT;
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El destino ya existe.');
+END registroDestino;
+/
+
+
+-- -----------------------------------------------------
+-- 2- Proc Registro de los tours
+-- -----------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE registroTour(
+    p_nombre          IN tours.tour_nombre%TYPE,
+    p_duracion        IN tours.duracion%TYPE,
+    p_descripcion     IN tours.descripcion%TYPE,
+    p_precio          IN tours.precio%TYPE,
+    p_cupos           IN tours.cantidad_cupos%TYPE,
+    p_dificultad      IN tours.id_dificultad%TYPE,
+    p_guia            IN tours.id_guia%TYPE,
+    p_id_promo        IN tours.id_promo%TYPE,
+    p_destino1        number,
+    p_destino2        number,
+    p_destino3        number)
+
+IS 
+    
+    v_precio number := p_precio;
+    v_status char(2) := 'A';
+    v_calificacion number := 0;
+    v_promocion number;
+    intSeqVal number;
+
+    v_dest1 number := p_destino1;
+    v_dest2 number := p_destino2;
+    v_dest3 number := p_destino3;
+    --array asociativo para guardar los destinos que tendra el tour.
+    TYPE destinos IS TABLE OF NUMBER INDEX BY VARCHAR2(15);
+    destino_id destinos;
+    Idx VARCHAR2(15);
+
+BEGIN
+    --inicializacion de la secuencia.
+    select sec_id_tour.nextval into intSeqVal from dual;
+
+    --extraccion del valor de la promocion en promociones.
+    select promocion into v_promocion from promociones where id_promo = p_id_promo;
+    
+INSERT into TOURS VALUES (
+    intSeqVal,
+    p_nombre,
+    p_duracion,
+    p_descripcion,
+    p_precio,
+    p_cupos,
+    p_dificultad,
+    p_guia,
+    v_status,
+    v_calificacion,
+    p_id_promo,
+    v_promocion,
+    sysdate
+    );
+
+    --asignacion de los valores de los destinos para el tour.
+    destino_id('destino1') := v_dest1;
+    destino_id('destino2') := v_dest2;
+    destino_id('destino3') := v_dest3;
+
+    --asignacion del primer valor del array.
+    idx := destino_id.first;
+
+    --loop en el array para insertar el id del tour y el destino en la relacion muchos a muchos.
+    WHILE Idx IS NOT NULL LOOP
+        INSERT INTO DESTINOS_TOURS VALUES(
+            destino_id(idx),
+            intSeqVal,
+            sysdate
+        );
+        Idx := destino_id.NEXT(Idx);
+    END LOOP;
+
+EXCEPTION
+   WHEN DUP_VAL_ON_INDEX THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: El tour ya existe.');
+END registroTour;
+/
+
+
+
+
 
 -----CREACION DE LAS VISTAS----
 
@@ -440,21 +877,28 @@ INSERT INTO CLIENTES VALUES(8977, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'A
 INSERT INTO CLIENTES VALUES(9010, '800-99-124', 'KREVITH', 'BEITIA', 'SHAW', 'HOLBERT', 'KREVITH9010@MAIL.COM', '(554) 887-4705', 57, 164);
 INSERT INTO CLIENTES VALUES(9067, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
 
+UPDATE CLIENTES SET 
+  fecha_nacimiento = '13-FEB-1988',
+  sexo = 'M',
+  ciudad = 'Panamá',
+  direccion = 'Punta Pacífica'
+where id_cliente = 8977;
+  
 
 -- Funciona registro cliente, cambiar orden de parámetros
 EXECUTE registroCliente('800-99-126', 'SERGIO', 'GARCIA', 'ROJAS', 'ALBERTO', 'SERGIO9173@MAIL.COM', '(760) 858-4101','16-JAN-1995','M',164,'Panamá','La Locería calle 5');
 EXECUTE registroCliente('800-99-127', 'RANDALL', 'SCHONELL', 'WAYNE', '', 'RANDALL9208@MAIL.COM', '(359) 601-3665','20-APR-1994', 'M',156,'Panamá', 'Costa del Este' );
-EXECUTE registroCliente('800-99-128', 'JORGE', 'RODRIGUEZ', 'MOLINA', 'IGNACIO', 'JORGE9235@MAIL.COM', '(880) 310-4393','04-FEB-1989', 156, 'Panamá', 'San Francisco');
-EXECUTE registroCliente('800-99-129', 'SEBASTIAN', 'RODRIGUEZ', 'GONZALEZ', '', 'SEBASTIAN9248@MAIL.COM', '(909) 739-9701', '18-' , 47);
-EXECUTE registroCliente('800-99-130', 'ANTONIO', 'MARTINEZ', 'FALLAS', 'FELIPE', 'ANTONIO9251@MAIL.COM', '(849) 837-9673', , 47);
-EXECUTE registroCliente('800-99-131', 'JOSE', 'PRADO', 'FALLAS', 'NATALIO', 'JOSE9274@MAIL.COM', '(491) 457-3396', , 47);
-EXECUTE registroCliente('800-99-132', 'PATRICIA', 'JIMENEZ', 'CENTENO', 'LUCIA', 'PATRICIA9333@MAIL.COM', '(509) 853-5896', , 47);
-EXECUTE registroCliente('800-99-133', 'ROY', 'MOJICA', 'SERRANO', 'EIBAR', 'ROY9378@MAIL.COM', '(333) 788-3128', , 164);
-EXECUTE registroCliente('800-99-134', 'NOLBERTO', 'M', 'MENDOZA', '', 'NOLBERTO9757@MAIL.COM', '(463) 376-6487', , 164);
-EXECUTE registroCliente('800-99-135', 'MARVIN', 'NUÑEZ', 'NUÑEZ', '', 'MARVIN9822@MAIL.COM', '(227) 711-3892', , 47);
-EXECUTE registroCliente('800-99-136', 'PATROCINIO', 'ELIZONDO', 'QUESADA', '', 'PATROCINIO9829@MAIL.COM', '(561) 275-1095', , 47);
-EXECUTE registroCliente('800-99-137', 'CLAUDE', 'PARENT', 'COTO', '', 'CLAUDE9863@MAIL.COM', '(461) 409-3369', , 36);
-EXECUTE registroCliente('800-99-138', 'GLADYS', 'DUARTE', 'OBANDO', '', 'GLADYS9865@MAIL.COM', '(348) 681-5993', , 47);
+EXECUTE registroCliente('800-99-128', 'JORGE', 'RODRIGUEZ', 'MOLINA', 'IGNACIO', 'JORGE9235@MAIL.COM', '(880) 310-4393','04-FEB-1989', 'M', 156, 'Panamá', 'San Francisco');
+EXECUTE registroCliente('800-99-129', 'SEBASTIAN', 'RODRIGUEZ', 'GONZALEZ', '', 'SEBASTIAN9248@MAIL.COM', '(909) 739-9701', '18-MAY-1988', 'M', 47, 'Panamá', 'Anton Rio hato');
+EXECUTE registroCliente('800-99-130', 'ANTONIO', 'MARTINEZ', 'FALLAS', 'FELIPE', 'ANTONIO9251@MAIL.COM', '(849) 837-9673','29-JUL-1994','M', 47, 'Panamá', 'Bethania');
+EXECUTE registroCliente('800-99-131', 'JOSE', 'PRADO', 'FALLAS', 'NATALIO', 'JOSE9274@MAIL.COM', '(491) 457-3396', '23-AUG-2000', 'M', 47, 'Panamá', 'Villa Lucre');
+EXECUTE registroCliente('800-99-132', 'PATRICIA', 'JIMENEZ', 'CENTENO', 'LUCIA', 'PATRICIA9333@MAIL.COM', '(509) 853-5896', '18-AUG-1984', 'F', 47, 'Panamá', 'Mañanitas calle 8');
+EXECUTE registroCliente('800-99-133', 'ROY', 'MOJICA', 'SERRANO', 'EIBAR', 'ROY9378@MAIL.COM', '(333) 788-3128', '30-MAR-1999','M', 164, 'Panamá', 'Calidonia');
+EXECUTE registroCliente('800-99-134', 'NOLBERTO', 'M', 'MENDOZA', '', 'NOLBERTO9757@MAIL.COM', '(463) 376-6487', '28-JUL-1993','M' , 164, 'Panamá', 'Chorrera Vista hermosa');
+EXECUTE registroCliente('800-99-135', 'MARVIN', 'NUÑEZ', 'NUÑEZ', '', 'MARVIN9822@MAIL.COM', '(227) 711-3892','27-SEP-1997', 'M' , 47, 'Panamá', 'Tocumen La siesta');
+EXECUTE registroCliente('800-99-136', 'PATROCINIO', 'ELIZONDO', 'QUESADA', '', 'PATROCINIO9829@MAIL.COM', '(561) 275-1095','14-SEP-2001', 'M' , 47, 'Panamá', 'Brisas del Golf');
+EXECUTE registroCliente('800-99-137', 'CLAUDE', 'PARENT', 'COTO', '', 'CLAUDE9863@MAIL.COM', '(461) 409-3369', '10-OCT-1999','F', 36, 'Panamá', 'Condado del rey');
+EXECUTE registroCliente('800-99-138', 'GLADYS', 'DUARTE', 'OBANDO', '', 'GLADYS9865@MAIL.COM', '(348) 681-5993', '13-NOV-1993','F', 47, 'Panamá', '');
 EXECUTE registroCliente('800-99-139', 'HORACIO', 'CAJINA', 'ESPINOZA', 'ALBERTO', 'HORACIO9866@MAIL.COM', '(816) 426-6987', , 47);
 EXECUTE registroCliente('800-99-140', 'HUGO', 'MARTINEZ', 'NUÑEZ', '', 'HUGO9868@MAIL.COM', '(999) 745-7934', , 47);
 EXECUTE registroCliente();
@@ -601,10 +1045,9 @@ parametros guia
 
 INSERT INTO GUIAS VALUES (1, '8-456-875', 'Fernando', 'Diaz', 'fernando.diaz@outlook.com', '68707239', 20, 'Ciudad de Panamá');
 INSERT INTO GUIAS VALUES (2, '6-916-569', 'Serena', 'Cañate', 'alexander.canate@outlook.com', '68752699', 25, 'Ciudad de Panamá');
---Llenar los otros dos
 EXECUTE registroGuia ('2-589-156', 'Jack', 'Salazar', 'jack.salazar@outlook.com', '68707239', 'Panamá', 'Ciudad de Panamá','M','15-SEP-1992');
-INSERT INTO GUIAS VALUES (4, 'N-58-789', 'Thiago', 'Cutire', 'thiago.cutire@outlook.com', '68707239', 25, 'Ciudad de Panamá');
-INSERT INTO GUIAS VALUES (5, '6-789-589', 'Estella', 'Cutire', 'jasmine.cutire@outlook.com', '68707239', 20, 'Ciudad de Panamá');
+EXECUTE registroGuia ('N-58-789', 'Thiago', 'Cutire', 'thiago.cutire@outlook.com', '68707239','Panamá', 'Ciudad de Panamá','M', '23-OCT-1996');
+EXECUTE registroGuia ('6-789-589', 'Estella', 'Cutire', 'jasmine.cutire@outlook.com', '68707239', 'Panamá', 'Ciudad de Panamá','F', '12-DEC-2000');
 
 
 ---DIFICULTAD--
