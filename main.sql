@@ -439,21 +439,64 @@ INSERT INTO PAIS VALUES (238, 'Zimbabue ');
 INSERT INTO CLIENTES VALUES(8977, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'ANTONIO', 'JUAN8977@MAIL.COM', '(337) 308-5133', 59, 198);
 INSERT INTO CLIENTES VALUES(9010, '800-99-124', 'KREVITH', 'BEITIA', 'SHAW', 'HOLBERT', 'KREVITH9010@MAIL.COM', '(554) 887-4705', 57, 164);
 INSERT INTO CLIENTES VALUES(9067, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
-INSERT INTO CLIENTES VALUES(9173, '800-99-126', 'SERGIO', 'GARCIA', 'ROJAS', 'ALBERTO', 'SERGIO9173@MAIL.COM', '(760) 858-4101', 41, 164);
-INSERT INTO CLIENTES VALUES(9208, '800-99-127', 'RANDALL', 'SCHONELL', 'WAYNE', '', 'RANDALL9208@MAIL.COM', '(359) 601-3665', 22, 13);
-INSERT INTO CLIENTES VALUES(9235, '800-99-128', 'JORGE', 'RODRIGUEZ', 'MOLINA', 'IGNACIO', 'JORGE9235@MAIL.COM', '(880) 310-4393', 61, 156);
-INSERT INTO CLIENTES VALUES(9248, '800-99-129', 'SEBASTIAN', 'RODRIGUEZ', 'GONZALEZ', '', 'SEBASTIAN9248@MAIL.COM', '(909) 739-9701', 64, 47);
-INSERT INTO CLIENTES VALUES(9251, '800-99-130', 'ANTONIO', 'MARTINEZ', 'FALLAS', 'FELIPE', 'ANTONIO9251@MAIL.COM', '(849) 837-9673', 54, 47);
-INSERT INTO CLIENTES VALUES(9274, '800-99-131', 'JOSE', 'PRADO', 'FALLAS', 'NATALIO', 'JOSE9274@MAIL.COM', '(491) 457-3396', 40, 47);
-INSERT INTO CLIENTES VALUES(9333, '800-99-132', 'PATRICIA', 'JIMENEZ', 'CENTENO', 'LUCIA', 'PATRICIA9333@MAIL.COM', '(509) 853-5896', 64, 47);
-INSERT INTO CLIENTES VALUES(9378, '800-99-133', 'ROY', 'MOJICA', 'SERRANO', 'EIBAR', 'ROY9378@MAIL.COM', '(333) 788-3128', 40, 164);
-INSERT INTO CLIENTES VALUES(9757, '800-99-134', 'NOLBERTO', 'M', 'MENDOZA', '', 'NOLBERTO9757@MAIL.COM', '(463) 376-6487', 46, 164);
-INSERT INTO CLIENTES VALUES(9822, '800-99-135', 'MARVIN', 'NUÑEZ', 'NUÑEZ', '', 'MARVIN9822@MAIL.COM', '(227) 711-3892', 21, 47);
-INSERT INTO CLIENTES VALUES(9829, '800-99-136', 'PATROCINIO', 'ELIZONDO', 'QUESADA', '', 'PATROCINIO9829@MAIL.COM', '(561) 275-1095', 56, 47);
-INSERT INTO CLIENTES VALUES(9863, '800-99-137', 'CLAUDE', 'PARENT', 'COTO', '', 'CLAUDE9863@MAIL.COM', '(461) 409-3369', 46, 36);
-INSERT INTO CLIENTES VALUES(9865, '800-99-138', 'GLADYS', 'DUARTE', 'OBANDO', '', 'GLADYS9865@MAIL.COM', '(348) 681-5993', 62, 47);
-INSERT INTO CLIENTES VALUES(9866, '800-99-139', 'HORACIO', 'CAJINA', 'ESPINOZA', 'ALBERTO', 'HORACIO9866@MAIL.COM', '(816) 426-6987', 26, 47);
-INSERT INTO CLIENTES VALUES(9868, '800-99-140', 'HUGO', 'MARTINEZ', 'NUÑEZ', '', 'HUGO9868@MAIL.COM', '(999) 745-7934', 63, 47);
+
+
+-- Funciona registro cliente, cambiar orden de parámetros
+EXECUTE registroCliente('800-99-126', 'SERGIO', 'GARCIA', 'ROJAS', 'ALBERTO', 'SERGIO9173@MAIL.COM', '(760) 858-4101','16-JAN-1995','M',164,'Panamá','La Locería calle 5');
+EXECUTE registroCliente('800-99-127', 'RANDALL', 'SCHONELL', 'WAYNE', '', 'RANDALL9208@MAIL.COM', '(359) 601-3665','20-APR-1994', 'M',156,'Panamá', 'Costa del Este' );
+EXECUTE registroCliente('800-99-128', 'JORGE', 'RODRIGUEZ', 'MOLINA', 'IGNACIO', 'JORGE9235@MAIL.COM', '(880) 310-4393','04-FEB-1989', 156, 'Panamá', 'San Francisco');
+EXECUTE registroCliente('800-99-129', 'SEBASTIAN', 'RODRIGUEZ', 'GONZALEZ', '', 'SEBASTIAN9248@MAIL.COM', '(909) 739-9701', '18-' , 47);
+EXECUTE registroCliente('800-99-130', 'ANTONIO', 'MARTINEZ', 'FALLAS', 'FELIPE', 'ANTONIO9251@MAIL.COM', '(849) 837-9673', , 47);
+EXECUTE registroCliente('800-99-131', 'JOSE', 'PRADO', 'FALLAS', 'NATALIO', 'JOSE9274@MAIL.COM', '(491) 457-3396', , 47);
+EXECUTE registroCliente('800-99-132', 'PATRICIA', 'JIMENEZ', 'CENTENO', 'LUCIA', 'PATRICIA9333@MAIL.COM', '(509) 853-5896', , 47);
+EXECUTE registroCliente('800-99-133', 'ROY', 'MOJICA', 'SERRANO', 'EIBAR', 'ROY9378@MAIL.COM', '(333) 788-3128', , 164);
+EXECUTE registroCliente('800-99-134', 'NOLBERTO', 'M', 'MENDOZA', '', 'NOLBERTO9757@MAIL.COM', '(463) 376-6487', , 164);
+EXECUTE registroCliente('800-99-135', 'MARVIN', 'NUÑEZ', 'NUÑEZ', '', 'MARVIN9822@MAIL.COM', '(227) 711-3892', , 47);
+EXECUTE registroCliente('800-99-136', 'PATROCINIO', 'ELIZONDO', 'QUESADA', '', 'PATROCINIO9829@MAIL.COM', '(561) 275-1095', , 47);
+EXECUTE registroCliente('800-99-137', 'CLAUDE', 'PARENT', 'COTO', '', 'CLAUDE9863@MAIL.COM', '(461) 409-3369', , 36);
+EXECUTE registroCliente('800-99-138', 'GLADYS', 'DUARTE', 'OBANDO', '', 'GLADYS9865@MAIL.COM', '(348) 681-5993', , 47);
+EXECUTE registroCliente('800-99-139', 'HORACIO', 'CAJINA', 'ESPINOZA', 'ALBERTO', 'HORACIO9866@MAIL.COM', '(816) 426-6987', , 47);
+EXECUTE registroCliente('800-99-140', 'HUGO', 'MARTINEZ', 'NUÑEZ', '', 'HUGO9868@MAIL.COM', '(999) 745-7934', , 47);
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+EXECUTE registroCliente();
+
+
+
+
+INSERT INTO CLIENTES VALUES(9865, );
+INSERT INTO CLIENTES VALUES(9866, );
+INSERT INTO CLIENTES VALUES(9868, );
 INSERT INTO CLIENTES VALUES(9870, '800-99-141', 'YENSEN', 'GOMEZ', 'HURTADO', 'JOAQUIN', 'YENSEN9870@MAIL.COM', '(994) 636-8261', 42, 47);
 INSERT INTO CLIENTES VALUES(9873, '800-99-142', 'BERNARDO', 'VEGA', 'HIDALGO', '', 'BERNARDO9873@MAIL.COM', '(235) 515-9166', 26, 47);
 INSERT INTO CLIENTES VALUES(9874, '800-99-143', 'ALVARO', 'CANALES', 'CANALES', '', 'ALVARO9874@MAIL.COM', '(381) 899-2311', 46, 47);
@@ -539,9 +582,27 @@ INSERT INTO CLIENTES VALUES(14713, '800-99-222', 'KOENISSFEST', 'DE', 'ICAZA', '
 
 ----Execute----
 ----GUIAS----
+
+/*
+parametros guia
+    p_dni         IN guias.dni%TYPE,
+    p_Nombre1     IN guias.nombre1%TYPE,
+    p_apellido1   IN guias.apellido1%TYPE,
+    p_email       IN guias.email%TYPE,
+    p_telefono    IN guias.telefono%TYPE,
+    p_ciudad      IN guias.ciudad%TYPE,
+    p_direccion   IN guias.direccion%TYPE,
+    p_sexo        IN guias.sexo%TYPE,
+    p_fecha       IN guias.fecha_nacimiento%TYPE
+
+
+*/
+
+
 INSERT INTO GUIAS VALUES (1, '8-456-875', 'Fernando', 'Diaz', 'fernando.diaz@outlook.com', '68707239', 20, 'Ciudad de Panamá');
 INSERT INTO GUIAS VALUES (2, '6-916-569', 'Serena', 'Cañate', 'alexander.canate@outlook.com', '68752699', 25, 'Ciudad de Panamá');
-INSERT INTO GUIAS VALUES (3, '2-589-156', 'Jack', 'Salazar', 'jack.salazar@outlook.com', '68707239', 20, 'Ciudad de Panamá');
+--Llenar los otros dos
+EXECUTE registroGuia ('2-589-156', 'Jack', 'Salazar', 'jack.salazar@outlook.com', '68707239', 'Panamá', 'Ciudad de Panamá','M','15-SEP-1992');
 INSERT INTO GUIAS VALUES (4, 'N-58-789', 'Thiago', 'Cutire', 'thiago.cutire@outlook.com', '68707239', 25, 'Ciudad de Panamá');
 INSERT INTO GUIAS VALUES (5, '6-789-589', 'Estella', 'Cutire', 'jasmine.cutire@outlook.com', '68707239', 20, 'Ciudad de Panamá');
 
@@ -567,10 +628,22 @@ INSERT INTO TOURS VALUES (10, 'El Archipiélago de las Perlas', 6, 'El Archipiel
 
 ----Execute----
 -----RESERVACION---
+
+/*
+-- PARAMETROS
+
+   p_id_cliente         IN clientes.id_cliente%TYPE,
+    p_id_tour            IN reserva_tours.id_tour1%TYPE,
+    p_cantidad_personas  IN reserva_tours.cantidad_personas%TYPE,
+    p_fecha_inicio       IN reserva_tours.fecha_inicio%TYPE
+
+*/
+-- PRIMERO CREAR TOURS
+-- CAMBIAR CADA UNO PARA que quede segun la secuencia
 INSERT INTO RESERVACION VALUES (1, 9333, TO_DATE('02-01-2019','DD-MM-YYYY'),1);
 INSERT INTO RESERVACION VALUES (2, 10020,TO_DATE('03-01-2019','DD-MM-YYYY'),2);
 INSERT INTO RESERVACION VALUES (3, 10057,TO_DATE('04-01-2019','DD-MM-YYYY'),5);
-INSERT INTO RESERVACION VALUES (4, 8977, TO_DATE('05-01-2019','DD-MM-YYYY'),4);
+EXECUTE registroReserva(4,4,1,TO_DATE('05-01-2019','DD-MM-YYYY'));
 INSERT INTO RESERVACION VALUES (5, 14713,TO_DATE('09-01-2019','DD-MM-YYYY'),4);
 INSERT INTO RESERVACION VALUES (6, 12396,TO_DATE('11-01-2019','DD-MM-YYYY'),3);
 INSERT INTO RESERVACION VALUES (7, 9251, TO_DATE('12-01-2019','DD-MM-YYYY'),3);
@@ -1032,7 +1105,7 @@ ALTER TABLE RESERVACION
 
 --------------------------------------------------
 ---La nueva implementacion de los procesos
--- TODO NO CORRER TODAVIA
+-- TODO NO CORRER TODAVIA DE AQUI PARA ABAJO
 --------------------------------------------------
 
 set SERVEROUTPUT on;

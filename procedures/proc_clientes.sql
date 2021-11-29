@@ -1,5 +1,6 @@
 -- -----------------------------------------------------
 -- 1- Proc Registro del cliente
+-- Primero correr funcion calcularEdad
 -- -----------------------------------------------------
 CREATE OR REPLACE PROCEDURE registroCliente(
     p_dni         IN clientes.dni%TYPE,
@@ -48,6 +49,7 @@ END registroCliente;
 
 -- -----------------------------------------------------
 -- 2- Proc Registro de reserva del cliente
+-- Correr primer calcular horas
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE registroReserva(
@@ -136,7 +138,7 @@ ELSE
 END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: .');
+       DBMS_OUTPUT.PUT_LINE('💣 Error: Advertencia: No se han encontrado datos.');
     WHEN limite_cupos_exeed THEN
         DBMS_OUTPUT.PUT_LINE('💣 Advertencia: Cupos agotados para este tour. Elija una fecha diferente.');
 END registroReserva;
