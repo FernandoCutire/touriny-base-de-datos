@@ -6,22 +6,27 @@ Triggers.
 1. trigger cuando se genera una nueva reserva
 */
 
-CREATE OR REPLACE TRIGGER 
-AFTER INSERT OR DELETE OR UPDATE
-ON RESERVACION
+CREATE OR REPLACE TRIGGER promCalificacion 
+AFTER INSERT
+ON REVIEWS
 FOR EACH ROW
+DECLARE
+--PRAGMA autonomous_transaction;
+l_prom number := avg(old.calificaion);
 
 BEGIN
-IF INSERTING THEN
-INSERT INTO CLIENTES_RESERVA VALUES(
-:NEW.
-);
+-- select avg(calificacion) into l_prom
+-- WHERE id_tour = :new.id_tour;
 
-EXCEPTION WHEN dup_val_on_index THEN
-  null;
+UPDATE tours
+  set calificacion = l_prom
+  where id_tours = :new.id_tour;
 
-END;
+
+END promCalificacion;
 /
+
+
 
 
 

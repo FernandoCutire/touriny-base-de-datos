@@ -1038,7 +1038,7 @@ ALTER TABLE RESERVACION
 set SERVEROUTPUT on;
 
 --INVOCACION: REGISTRO DE LA RESERVA DEL CLIENTE
-execute registroReserva(9333,1, 5,'28-nov-21');
+execute registroReserva(9333,1, 5,'02-dec-21');
     p_id_cliente         
     p_id_tour            
     p_cantidad_personas  
