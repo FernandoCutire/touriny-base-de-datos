@@ -164,14 +164,14 @@ NOCYCLE;
 --SECUENCIAS DE RESERVA--
 CREATE SEQUENCE sec_id_reserva
 INCREMENT BY 1
-START WITH 3
+START WITH 4
 NOMAXVALUE
 NOCYCLE;
 
 --SECUENCIAS DE RESERVA_TOUR--
 CREATE SEQUENCE sec_id_reserva_tour
 INCREMENT BY 1
-START WITH 101
+START WITH 4
 NOMAXVALUE
 NOCYCLE;
 
@@ -441,7 +441,7 @@ INSERT INTO PAIS VALUES (238, 'Zimbabue ');
 --INSERTAR CLIENTES--
 INSERT INTO CLIENTES VALUES(8977, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'ANTONIO', 'JUAN8977@MAIL.COM', '(337) 308-5133', 59, 198);
 INSERT INTO CLIENTES VALUES(9010, '800-99-124', 'KREVITH', 'BEITIA', 'SHAW', 'HOLBERT', 'KREVITH9010@MAIL.COM', '(554) 887-4705', 57, 164);
-INSERT INTO CLIENTES VALUES(9067, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
+INSERT INTO CLIENTES VALUES(10057, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
 
 --INSERTAR GUIA--
 INSERT INTO GUIAS VALUES (1, '8-456-875', 'Fernando', 'Diaz', 'fernando.diaz@outlook.com', '68707239', 20, 'Ciudad de Panamá');
@@ -678,8 +678,9 @@ BEGIN
        DBMS_OUTPUT.PUT_LINE('💣 Error: Fecha no valida.');
 END calcularEdadCliente;
 /
-
+-------------------------------------------------
 --Funcion para calcular horas
+------------------------------------------------
 create or replace function calcularhoras(l_horas number)
 return number IS
 v_dias number;
@@ -700,9 +701,9 @@ EXCEPTION
        DBMS_OUTPUT.PUT_LINE('💣 Error: hora ingresada no valida.');
 END calcularhoras;
 /
-
+----------------------------------------
 --Funcion para aplicar descuento
-
+-------------------------------------------------------
 create or replace function descuento(descuento number, precio number)
 return number IS
 v_resultado number;
@@ -1143,10 +1144,7 @@ where id_promo = no_promocion;
 END activarPromo;
 /
 
-EXECUTE registroPromociones('Black Friday',11,12,0.35);
-EXECUTE registroPromociones('Navidad', 12, 1, 0.5);
-EXECUTE registroPromociones('Aniversario', 6, 7, 0.25);
-EXECUTE registroPromociones('Rebajas de enero', 1, 2, 0.20);
+
 
 
 
@@ -1247,7 +1245,15 @@ END ACTUALIZAR_AUDITORIA;
 
 
 
+-------------------------------------------------------------------
+-- INVOCACIONES A LOS PROCEDIMIENTOS
+-------------------------------------------------------------------
 
+--ACTIVACION DE LAS PROMOCIONES
+EXECUTE registroPromociones('Black Friday',11,12,0.35);
+EXECUTE registroPromociones('Navidad', 12, 1, 0.5);
+EXECUTE registroPromociones('Aniversario', 6, 7, 0.25);
+EXECUTE registroPromociones('Rebajas de enero', 1, 2, 0.20);
 
 
 -----UPDATE PARA LOS DATOS ANTERIORES---
@@ -1418,7 +1424,9 @@ UPDATE DESTINOS SET
   fecha_ingreso = SYSDATE
 where id_destinos = 3;
 
-----Execute----
+-------------------------------------------------------------------------------
+---INVOCACION PROCEDIMIENTO INSERTAR DESTINOS
+--------------------------------------------------------------------------------
 EXECUTE registroDestino('Panamá Viejo', '9.006795767655342, -79.48521125249091');
 EXECUTE registroDestino('Portobelo', '9.553700513834134, -79.6571566187573');
 EXECUTE registroDestino('San Blas', '9.588879656128823, -78.70181560341317');
@@ -1435,58 +1443,10 @@ EXECUTE registroDestino('Bocas del Toro', '9.290079231354605, -82.67968961046321
 EXECUTE registroDestino('Ninguno', '-');
 
 
----Execute---
----TOURS---
-/*
-CREATE OR REPLACE PROCEDURE registroTour(
-    p_nombre          IN tours.tour_nombre%TYPE,
-    p_duracion        IN tours.duracion%TYPE,
-    p_descripcion     IN tours.descripcion%TYPE,
-    p_precio          IN tours.precio%TYPE,
-    p_cupos           IN tours.cantidad_cupos%TYPE,
-    p_dificultad      IN tours.id_dificultad%TYPE,
-    p_guia            IN tours.id_guia%TYPE,
-    p_id_promo        IN tours.id_promo%TYPE,
-    p_destino1        number,
-    p_destino2        number,
-    p_destino3        number)
 
-    TOUR
-
-    ID_TOURS	NOT NULL	NUMBER
-    TOUR_NOMBRE	NOT NULL	VARCHAR2(45)
-    DURACION	NOT NULL	NUMBER
-    DESCRIPCION	NOT NULL	VARCHAR2(250)
-    PRECIO	NOT NULL	NUMBER
-    CANTIDAD_CUPOS	NOT NULL	NUMBER
-    ID_DIFICULTAD	NOT NULL	NUMBER
-    ID_GUIA	NOT NULL	NUMBER
-    STATUS		CHAR(2)
-    CALIFICACION		NUMBER(1)
-    ID_PROMO		NUMBER
-    PROMOCION		NUMBER
-    FECHA_MOD		DATE
-     
-    CREATE TABLE TOURS (id_tours NUMBER NOT NULL,
-  tour_nombre VARCHAR2(45) NOT NULL,
-  duracion NUMBER NOT NULL,
-  descripcion VARCHAR2(250) NOT NULL,
-  precio number NOT NULL,
-  cantidad_cupos number not null,
-  id_dificultad NUMBER NOT NULL,
-  id_guia NUMBER NOT NULL,
-  CONSTRAINT pk_id_tours PRIMARY KEY (id_tours),
-  CONSTRAINT fk_id_dificultad
-    FOREIGN KEY (id_dificultad)
-    REFERENCES DIFICULTAD (id_dificultad),
-  CONSTRAINT fk_id_guia
-    FOREIGN KEY (id_guia)
-    REFERENCES GUIAS (id_guia)
-);
-
-
-*/ 
-
+--------------------------------------------------------------------------------------------
+--- INVOCACION PROCEDIMIENTO REGISTRO DE TOURS
+--------------------------------------------------------------------------------------------
 UPDATE TOURS SET
   id_promo = 1,
   calificacion = 0,
@@ -1507,43 +1467,13 @@ EXECUTE registroTour('Ven a Bocas del Toro', 20, 'Playas, buen clima, restaurant
 EXECUTE registroTour('La isla de las Flores', 9, 'La isla de las Flores tiene mucho que ofrecer a sus clientes.', 150, 15, 2, 4, 4, 8,9,17  );
 EXECUTE registroTour('El Archipiélago de las Perlas', 6, 'El Archipielago de las Perlas da una gran experiencia para la familia.', 80, 12, 3, 2, 4, 6, 7, 17);
 
-/*
-   p_nombre          IN tours.tour_nombre%TYPE,
-    p_duracion        IN tours.duracion%TYPE,
-    p_descripcion     IN tours.descripcion%TYPE,
-    p_precio          IN tours.precio%TYPE,
-    p_cupos           IN tours.cantidad_cupos%TYPE,
-    p_dificultad      IN tours.id_dificultad%TYPE,
-    p_guia            IN tours.id_guia%TYPE,
-    p_id_promo        IN tours.id_promo%TYPE,
-    p_destino1        number,
-    p_destino2        number,
-    p_destino3        number)
-    
 
 
+--------------------------------------------------------------------------------------------
+--- INVOCACION PROCEDIMIENTO REGISTRO DE TOURS
+--------------------------------------------------------------------------------------------
+ --PARAMETROS: p_id_cliente, p_id_tour, p_cantidad_personas, p_fecha_inicio
 
-
-
-----Execute----
------RESERVACION---
-
-/*
--- PARAMETROS PROCEDIMIENTO REGISTRO_RESERVA
-
-   p_id_cliente         IN clientes.id_cliente%TYPE,
-    p_id_tour            IN reserva_tours.id_tour1%TYPE,
-    p_cantidad_personas  IN reserva_tours.cantidad_personas%TYPE,
-    p_fecha_inicio       IN reserva_tours.fecha_inicio%TYPE
-
-*/
--- PRIMERO CREAR TOURS
--- CAMBIAR CADA UNO PARA que quede segun la secuencia
-/*
-INSERT INTO RESERVACION VALUES (1, 9333, TO_DATE('02-01-2022','DD-MM-YYYY'),1);
-INSERT INTO RESERVACION VALUES (2, 10020,TO_DATE('03-01-2022','DD-MM-YYYY'),2);
-INSERT INTO RESERVACION VALUES (3, 10057,TO_DATE('04-01-2022','DD-MM-YYYY'),5);
-*/
 EXECUTE registroReserva(4,3,4,TO_DATE('05-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(5,2,4,TO_DATE('09-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(6,6,3,TO_DATE('11-01-2022','DD-MM-YYYY'));
@@ -1553,19 +1483,46 @@ EXECUTE registroReserva(9,3,5,TO_DATE('18-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(10,2,4,TO_DATE('23-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(11,7,2,TO_DATE('02-02-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(12,8,4,TO_DATE('08-02-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(13,10,4,TO_DATE('10-02-2022','DD-MM-YYYY'));
+
+-----PRUEBA DE LAS VALIDACION DE CUPO Y FECHA 
+--breackpoint
+EXECUTE registroReserva(13,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
+--breackpoint
 EXECUTE registroReserva(14,10,1,TO_DATE('12-02-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(15,6,5,TO_DATE('14-02-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(16,8,5,TO_DATE('01-03-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(17,9, 1,TO_DATE('06-03-2022','DD-MM-YYYY'));
+--breackpoint
+EXECUTE registroReserva(16,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
+
+EXECUTE registroReserva(17,9,1,TO_DATE('06-03-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(18,2,3,TO_DATE('10-03-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(19,3,3,TO_DATE('18-03-2022','DD-MM-YYYY'));
+--breackpoint
+EXECUTE registroReserva(19,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
+
 EXECUTE registroReserva(20,4,4,TO_DATE('21-03-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(21,5, 1,TO_DATE('03-04-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(22,4,4,TO_DATE('10-04-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(23,6,1,TO_DATE('12-04-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(24,1,5,TO_DATE('19-04-2022','DD-MM-YYYY'));
-EXECUTE registroReserva(25,5,5,TO_DATE('21-04-2022','DD-MM-YYYY'));
+EXECUTE registroReserva(22,5,4,TO_DATE('10-04-2022','DD-MM-YYYY'));
+EXECUTE registroReserva(23,5,1,TO_DATE('12-04-2022','DD-MM-YYYY'));
+--breackpoint
+EXECUTE registroReserva(24,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
+--breackpoint
+EXECUTE registroReserva(25,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
+
+/*----IMPORTANTE (0.0)
+                       __
+                     .'  '.
+                 _.-'/  |  \
+    ,        _.-"  ,|  /  0 `-.
+    |\    .-"       `--""-.__.'=====================-,
+    \ '-'`        .___.--._)=========================|
+     \            .'      |                          |
+      |     /,_.-'        |        IMPORTANTE        |
+    _/   _.'(             |           LEER           |
+   /  ,-' \  \            |        MENSAJE           |
+   \  \    `-'            |                          |
+    `-'                   '--------------------------'
+--PASAR A --> EXECUTE REGRISTRAR FACTURA PARA LIBERAR LOS CUPOS 
+--PARA GENERAR NUEVAS RESERVAS..*/
+/*
 EXECUTE registroReserva(26,7, 1,TO_DATE('24-04-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(27,9,4,TO_DATE('27-04-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(28,1,1,TO_DATE('27-04-2022','DD-MM-YYYY'));
@@ -1638,20 +1595,20 @@ EXECUTE registroReserva(94, 3,1,TO_DATE('25-11-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(95, 4,2,TO_DATE('25-11-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(96, 4,2,TO_DATE('20-12-2022','DD-MM-YYYY'));
 
+*/
 
-----Trigger----
 
+
+-----------------------------------------------------------------------------------------------
+-- INVOCACION A LA ACTIVACION DE PROMOCIONES
+-----------------------------------------------------------------------------------------------
 
 EXECUTE activarPromo(1);
 EXECUTE activarPromo(2);
 
-/*
-    p_cliente          IN reviews.id_cliente%TYPE,
-    p_tour            IN reviews.id_tour%TYPE,
-    p_descripcion     IN reviews.descripcion%TYPE,
-    p_calificacion    IN reviews.calificacion%TYPE
-    )
-*/
+-----------------------------------------------------------------------------------------------
+-- INVOCACION AL REGISTRO DE LAS REVIEWS
+-----------------------------------------------------------------------------------------------
 EXECUTE registroReview(4,3,'Me pareció muy bueno',4);
 EXECUTE registroReview(23,5,'Muy Bonito',5);
 EXECUTE registroReview(10,4,'Una buena experiencia, con lindas vistas',4);
@@ -1670,6 +1627,30 @@ EXECUTE registroReview(75,8,'Me la pase muy bien en Familia, recomendado',5);
 
 
 
+-----------------------------------------------------------------------------------------------
+-- INVOCACION AL REGISTRAR FACTURA
+-----------------------------------------------------------------------------------------------
+EXECUTE registrarFactura (4,5,29,'CO');
+EXECUTE registrarFactura (5,6,29,'CO');
+EXECUTE registrarFactura (6,7,29,'CO');
+EXECUTE registrarFactura (7,8,29,'CA');
+EXECUTE registrarFactura (8,9,29,'CO');
+EXECUTE registrarFactura (9,10,2,'CO');
+EXECUTE registrarFactura (10,11,45,'CO');
+EXECUTE registrarFactura (11,12,45,'CO');
+EXECUTE registrarFactura (12,15,45,'CO');
+EXECUTE registrarFactura (13,16,45,'CA');
+EXECUTE registrarFactura (14,17,45,'CO');
+EXECUTE registrarFactura (15,18,45,'CO');
+EXECUTE registrarFactura (16,19,45,'CA');
+EXECUTE registrarFactura (17,20,45,'CO');
+EXECUTE registrarFactura (18,21,45,'CO');
+EXECUTE registrarFactura (19,22,45,'CA');
+EXECUTE registrarFactura (20,23,45,'CO');
+EXECUTE registrarFactura (21,24,45,'CA');
+EXECUTE registrarFactura (22,25,45,'CA'); 
+
+
 --------------------------------------------------
 ---La nueva implementacion de los procesos
 -- TODO NO CORRER TODAVIA DE AQUI PARA ABAJO
@@ -1677,14 +1658,6 @@ EXECUTE registroReview(75,8,'Me la pase muy bien en Familia, recomendado',5);
 
 set SERVEROUTPUT on;
 
---INVOCACION: REGISTRO DE LA RESERVA DEL CLIENTE
-execute registroReserva(9333,1, 5,'28-nov-21');
-    p_id_cliente         
-    p_id_tour            
-    p_cantidad_personas  
-    p_fecha_inicio       
-    
-    
 -----CREACION DE LAS VISTAS----
 
 -- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
@@ -1776,9 +1749,9 @@ ORDER BY COUNT(t.ID_PROMO) DESC;
 
 --10 MONTO DE FACTURACIÓN
 
-CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT (r.fecha_reserva) as "FECHA", COUNT(f.monto_pago) "MONTO"
+CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT (r.fecha_reserva) as "FECHA", SUM(f.monto_pago) "MONTO"
 FROM RESERVACION r
     INNER JOIN FACTURACION f ON f.id_reserva = r.id_reserva 
     GROUP BY r.fecha_reserva
     ORDER BY COUNT(f.monto_pago) DESC;
-    
+
