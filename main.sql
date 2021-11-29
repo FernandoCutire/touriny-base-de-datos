@@ -128,7 +128,7 @@ CREATE TABLE DESTINOS_TOURS (
 --SECUENCIAS DE ID DE TABLAS Clientes--
 CREATE SEQUENCE sec_id_cliente
 INCREMENT BY 1
-START WITH 14720
+START WITH 4
 NOMAXVALUE
 NOCYCLE;
 
@@ -142,28 +142,29 @@ NOMAXVALUE;
 --SECUENCIAS DE LOS DESTINOS--
 CREATE SEQUENCE sec_id_destino
 INCREMENT BY 1
-START WITH 17
+START WITH 4
 NOMAXVALUE
 NOCYCLE;
 
 --SECUENCIAS DE LOS DESTINOS--
 CREATE SEQUENCE sec_id_tour
 INCREMENT BY 1
-START WITH 11
+START WITH 3
 NOMAXVALUE
 NOCYCLE;
+
 
 --SECUENCIAS DE LOS GUIAS--
 CREATE SEQUENCE sec_id_guia
 INCREMENT BY 1
-START WITH 11
+START WITH 3
 NOMAXVALUE
 NOCYCLE;
 
 --SECUENCIAS DE RESERVA--
 CREATE SEQUENCE sec_id_reserva
 INCREMENT BY 1
-START WITH 101
+START WITH 3
 NOMAXVALUE
 NOCYCLE;
 
@@ -845,6 +846,10 @@ END registroReserva;
 -- 3- Proc Registro de reviews del cliente
 -- -----------------------------------------------------
 
+-- -----------------------------------------------------
+-- 3- Proc Registro de reviews del cliente
+-- -----------------------------------------------------
+
 CREATE OR REPLACE PROCEDURE registroReview(
     p_ciente          IN reviews.id_cliente%TYPE,
     p_tour            IN reviews.id_tour%TYPE,
@@ -854,7 +859,10 @@ CREATE OR REPLACE PROCEDURE registroReview(
 
 IS 
     intSeqVal number;
+    PRAGMA autonomous_transaction;
 BEGIN
+
+IF p_calificacion < 5 then
     select sec_id_review.nextval into intSeqVal from dual;
 INSERT into REVIEWS VALUES (
     intSeqVal,
@@ -865,6 +873,10 @@ INSERT into REVIEWS VALUES (
     sysdate
     );
     COMMIT;
+ELSE
+DBMS_OUTPUT.PUT_LINE('💣 Error: la calificacion es de 0 a 5');
+END IF;
+
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
@@ -1181,8 +1193,9 @@ EXECUTE registroCliente('800-99-126', 'SERGIO', 'GARCIA', 'ROJAS', 'ALBERTO', 'S
 EXECUTE registroCliente('800-99-127', 'RANDALL', 'SCHONELL', 'WAYNE', '', 'RANDALL9208@MAIL.COM', '(359) 601-3665','20-APR-1994', 'M',156,'Panamá', 'Costa del Este' );
 EXECUTE registroCliente('800-99-128', 'JORGE', 'RODRIGUEZ', 'MOLINA', 'IGNACIO', 'JORGE9235@MAIL.COM', '(880) 310-4393','04-FEB-1989', 'M', 156, 'Panamá', 'San Francisco');
 EXECUTE registroCliente('800-99-129', 'SEBASTIAN', 'RODRIGUEZ', 'GONZALEZ', '', 'SEBASTIAN9248@MAIL.COM', '(909) 739-9701', '18-MAY-1988', 'M', 47, 'Panamá', 'Anton Rio hato');
+
+
 EXECUTE registroCliente('800-99-130', 'ANTONIO', 'MARTINEZ', 'FALLAS', 'FELIPE', 'ANTONIO9251@MAIL.COM', '(849) 837-9673','29-JUL-1994','M', 47, 'Panamá', 'Bethania');
-EXECUTE registroCliente('800-99-131', 'JOSE', 'PRADO', 'FALLAS', 'NATALIO', 'JOSE9274@MAIL.COM', '(491) 457-3396', '23-AUG-2000', 'M', 47, 'Panamá', 'Villa Lucre');
 EXECUTE registroCliente('800-99-132', 'PATRICIA', 'JIMENEZ', 'CENTENO', 'LUCIA', 'PATRICIA9333@MAIL.COM', '(509) 853-5896', '18-AUG-1984', 'F', 47, 'Panamá', 'Mañanitas calle 8');
 EXECUTE registroCliente('800-99-133', 'ROY', 'MOJICA', 'SERRANO', 'EIBAR', 'ROY9378@MAIL.COM', '(333) 788-3128', '30-MAR-1999','M', 164, 'Panamá', 'Calidonia');
 EXECUTE registroCliente('800-99-134', 'NOLBERTO', 'M', 'MENDOZA', '', 'NOLBERTO9757@MAIL.COM', '(463) 376-6487', '28-JUL-1993','M' , 164, 'Panamá', 'Chorrera Vista hermosa');
@@ -1191,89 +1204,88 @@ EXECUTE registroCliente('800-99-136', 'PATROCINIO', 'ELIZONDO', 'QUESADA', '', '
 EXECUTE registroCliente('800-99-137', 'CLAUDE', 'PARENT', 'COTO', '', 'CLAUDE9863@MAIL.COM', '(461) 409-3369', '10-OCT-1999','F', 36, 'Panamá', 'Condado del rey');
 EXECUTE registroCliente('800-99-138', 'GLADYS', 'DUARTE', 'OBANDO', '', 'GLADYS9865@MAIL.COM', '(348) 681-5993', '13-NOV-1993','F', 47, 'Panamá', 'El Dorado');
 EXECUTE registroCliente('800-99-139', 'HORACIO', 'CAJINA', 'ESPINOZA', 'ALBERTO', 'HORACIO9866@MAIL.COM', '(816) 426-6987', '12-MAR-1999', 'M' , 47, 'Panamá', 'El Valle de Antón');
-EXECUTE registroCliente('800-99-140', 'HUGO', 'MARTINEZ', 'NUÑEZ', '', 'HUGO9868@MAIL.COM', '(999) 745-7934','10-JAN-2000','M' , 47,'Panamá', 'Santiago');
 EXECUTE registroCliente('800-99-141', 'YENSEN', 'GOMEZ', 'HURTADO', 'JOAQUIN', 'YENSEN9870@MAIL.COM', '(994) 636-8261', '23-APR-1968','M', 47, 'Panamá', 'Penonomé');
 EXECUTE registroCliente('800-99-142', 'BERNARDO', 'VEGA', 'HIDALGO', '', 'BERNARDO9873@MAIL.COM', '(235) 515-9166', '21-DEC-1979', 'M', 47, 'Panamá', 'Santiago');
 EXECUTE registroCliente('800-99-143', 'ALVARO', 'CANALES', 'CANALES', '', 'ALVARO9874@MAIL.COM', '(381) 899-2311', '12-APR-1994', 'M', 47, 'Panamá', 'Boquete');
 EXECUTE registroCliente('800-99-144', 'ALBERTO', 'GIL', 'COLL', 'EUGENIO', 'ALBERTO9877@MAIL.COM', '(926) 341-7084', '31-OCT-1967', 'M', 226, 'Panamá', 'Santiago');
-EXECUTE registroCliente('800-99-145', 'MARCOS', 'ALVARADO', 'POVEDA', 'AURELIO', 'MARCOS9879@MAIL.COM', '(698) 889-4891', 29, 47);
-EXECUTE registroCliente('800-99-146', 'MARCO', 'RODRIGUEZ', 'PRADO', 'H', 'MARCO9917@MAIL.COM', '(800) 515-7467', 36, 47);
-EXECUTE registroCliente('800-99-147', 'PEDRO', 'BARRANZA', 'GUTIERREZ', '', 'PEDRO9919@MAIL.COM', '(963) 472-3173', 63, 47);
-EXECUTE registroCliente('800-99-148', 'KARLA', 'WELCHERS', 'GIL', 'CRISTINA', 'KARLA9925@MAIL.COM', '(563) 841-5901', 58, 226);
-EXECUTE registroCliente('800-99-149', 'EVELING', 'VICTOR', 'LOPEZ', 'JOHANNA', 'EVELING9950@MAIL.COM', '(215) 483-1128', 31, 156);
-EXECUTE registroCliente('800-99-150', 'FRANCISCO', 'MACHADO', 'PIZARRO', '', 'FRANCISCO9953@MAIL.COM', '(718) 699-3754', 21, 221);
-EXECUTE registroCliente('800-99-151', 'RICARDO', 'IBARRA', 'LOPEZ', '', 'RICARDO9965@MAIL.COM', '(814) 877-9845', 60, 156);
-EXECUTE registroCliente('800-99-152', 'JORGE', 'REYES', 'MORA', 'SOCRATES', 'JORGE9967@MAIL.COM', '(720) 932-4515', 55, 221);
-EXECUTE registroCliente('800-99-153', 'ADRIAN', 'ARAYA', 'QUESADA', '', 'ADRIAN9970@MAIL.COM', '(296) 572-1447', 26, 221);
-EXECUTE registroCliente('800-99-154', 'JOSE', 'TREMINIO', 'ARCEDA', 'ERNESTO', 'JOSE9972@MAIL.COM', '(840) 470-0839', 58, 156);
-EXECUTE registroCliente('800-99-155', 'MARVIN', 'MARTINEZ', 'RUIZ', 'PASCUAL', 'MARVIN9978@MAIL.COM', '(447) 214-8351', 39, 221);
-EXECUTE registroCliente('800-99-156', 'DAMIAN', 'DELGADO', 'UMAÑA', '', 'DAMIAN9992@MAIL.COM', '(614) 782-2559', 29, 221);
-EXECUTE registroCliente('800-99-157', 'JULIO', 'GUEVARA', 'CARDENAS', 'CESAR', 'JULIO9998@MAIL.COM', '(605) 207-6553', 51, 156);
-EXECUTE registroCliente('800-99-158', 'ERICK', 'NAVAS', 'LOPEZ', 'ROBERTO', 'ERICK10004@MAIL.COM', '(291) 784-5428', 59, 156);
-EXECUTE registroCliente('800-99-159', 'JHONY', 'CAMARGO', 'APONTE', '', 'JHONY10009@MAIL.COM', '(885) 246-9627', 41, 164);
-EXECUTE registroCliente('800-99-160', 'MARVIN', 'OROZCO', 'BRAVO', '', 'MARVIN10018@MAIL.COM', '(410) 843-8848', 58, 221);
-EXECUTE registroCliente('800-99-161', 'JAMIL', 'VIDAURRE', 'ALVAREZ', 'JOSUE', 'JAMIL10020@MAIL.COM', '(740) 233-9392', 30, 221);
-EXECUTE registroCliente('800-99-162', 'MANUEL', 'ELIZONDO', 'FALLAS', 'ANTONIO', 'MANUEL10053@MAIL.COM', '(683) 380-2194', 61, 221);
-EXECUTE registroCliente('800-99-163', 'CHRISTIAN', 'LOPEZ', 'DIAS', 'FELIPE', 'CHRISTIAN10057@MAIL.COM', '(718) 239-1416', 20, 221);
-EXECUTE registroCliente('800-99-164', 'MICHAEL', 'CASTRO', 'HERRERA', '', 'MICHAEL10099@MAIL.COM', '(717) 401-2417', 60, 221);
-EXECUTE registroCliente('800-99-165', 'LUIS', 'BERNAL', 'CARRERA', 'ANTONIO', 'LUIS10128@MAIL.COM', '(209) 934-2057', 24, 164);
-EXECUTE registroCliente('800-99-166', 'LUIS', 'CENTENO', 'ARGUEDAS', '', 'LUIS10149@MAIL.COM', '(336) 671-8952', 49, 221);
-EXECUTE registroCliente('800-99-167', 'HERNAN', 'COTO', 'VARGAS', 'JOSE', 'HERNAN10150@MAIL.COM', '(627) 856-2837', 43, 221);
-EXECUTE registroCliente('800-99-168', 'OSWALD', 'ICAZA', 'CHAPMAN', 'RAMON', 'OSWALD10152@MAIL.COM', '(289) 320-4690', 19, 164);
-EXECUTE registroCliente('800-99-169', 'EDWIN', 'ESPINOSA', 'ZABALLOS', 'ROBERTO', 'EDWIN10167@MAIL.COM', '(393) 817-7489', 47, 164);
-EXECUTE registroCliente('800-99-170', 'CARLOS', 'ARGEÑAL', 'ODIO', 'MANUEL', 'CARLOS10173@MAIL.COM', '(874) 383-0296', 26, 156);
-EXECUTE registroCliente('800-99-171', 'EVERTH', 'HERRERA', 'RAMOS', 'JOSE', 'EVERTH10192@MAIL.COM', '(819) 848-4270', 35, 221);
-EXECUTE registroCliente('800-99-172', 'ANGELICA', 'QUESADA', 'VILLEGAS', '', 'ANGELICA10195@MAIL.COM', '(567) 284-6125', 53, 221);
-EXECUTE registroCliente('800-99-173', 'PATRICIA', 'V.', 'ALVARENGA', '', 'PATRICIA10198@MAIL.COM', '(558) 767-0282', 45, 221);
-EXECUTE registroCliente('800-99-174', 'BLANCA', 'HERRERA', 'VIQUEZ', 'IRMA', 'BLANCA10209@MAIL.COM', '(723) 477-6442', 39, 221);
-EXECUTE registroCliente('800-99-175', 'MOISES', 'TORREZ', 'HERNANDEZ', '', 'MOISES10223@MAIL.COM', '(385) 707-3076', 47, 156);
-EXECUTE registroCliente('800-99-176', 'JUAN', 'BAEZ', 'OJEDA', 'ROLANDO', 'JUAN10237@MAIL.COM', '(643) 232-9213', 24, 156);
-EXECUTE registroCliente('800-99-177', 'MARTHA', 'LAGUNA', 'LANUZA', '', 'MARTHA10244@MAIL.COM', '(906) 876-1848', 61, 221);
-EXECUTE registroCliente('800-99-178', 'DANILO', 'CASCANTE', 'DURAN', '', 'DANILO10255@MAIL.COM', '(215) 467-3942', 30, 221);
-EXECUTE registroCliente('800-99-179', 'MAX', 'CUTILLAS', 'HERNANDEZ', 'ULISES', 'MAX10896@MAIL.COM', '(203) 828-1100', 40, 221);
-EXECUTE registroCliente('800-99-180', 'MAXVIDAL', 'PEREZ', 'ALONZO', '', 'MAXVIDAL10898@MAIL.COM', '(669) 961-9093', 27, 221);
-EXECUTE registroCliente('800-99-181', 'ANA', 'HERNANDEZ', 'CANO', 'JULIA', 'ANA10906@MAIL.COM', '(945) 531-6686', 21, 221);
-EXECUTE registroCliente('800-99-182', 'MAURICIO', 'CARRANZA', 'CASTRO', 'ALBERTO', 'MAURICIO10912@MAIL.COM', '(677) 273-1606', 18, 221);
-EXECUTE registroCliente('800-99-183', 'CARLOS', 'CESPEDES', 'CASCANTE', 'FRANCIS', 'CARLOS10915@MAIL.COM', '(731) 772-3521', 30, 221);
-EXECUTE registroCliente('800-99-184', 'JIMMY', 'NORORI', 'ALVARADO', 'JOSE', 'JIMMY10917@MAIL.COM', '(969) 808-0512', 31, 221);
-EXECUTE registroCliente('800-99-185', 'FRANCISCO', 'SANCHEZ', 'LEON', 'ALBERTO', 'FRANCISCO10930@MAIL.COM', '(959) 584-1775', 25, 221);
-EXECUTE registroCliente('800-99-186', 'ISIDRO', 'CASCO', 'AVELAREZ', 'EUSEBRO', 'ISIDRO10935@MAIL.COM', '(765) 506-9345', 57, 156);
-EXECUTE registroCliente('800-99-187', 'EDWIN', 'RIOS', 'DAVIS', 'DANIEL', 'EDWIN11007@MAIL.COM', '(320) 623-4695', 45, 164);
-EXECUTE registroCliente('800-99-188', 'OSCAR', 'TORRES', 'PATIÑO', 'ARSENIO', 'OSCAR11027@MAIL.COM', '(325) 787-5793', 43, 164);
-EXECUTE registroCliente('800-99-189', 'JORGE', 'SOTO', 'SEGURO', 'GERARDO', 'JORGE11114@MAIL.COM', '(931) 373-0849', 28, 221);
-EXECUTE registroCliente('800-99-190', 'JACKELINE', 'TEJADA', 'MURILLO', 'GRISSEL', 'JACKELINE11248@MAIL.COM', '(324) 422-3262', 37, 92);
-EXECUTE registroCliente('800-99-191', 'RAFAEL', 'CORPAS', 'MALDONADO', '', 'RAFAEL11454@MAIL.COM', '(310) 661-9757', 26, 164);
-EXECUTE registroCliente('800-99-192', 'CHRISTOPH', 'FELBER', 'FRANZ', '', 'CHRISTOPH11947@MAIL.COM', '(515) 707-7004', 64, 13);
-EXECUTE registroCliente('800-99-193', 'CARLOS', 'G.', 'HERNANDEZ', 'JOSE', 'CARLOS12396@MAIL.COM', '(802) 901-2929', 49, 148);
-EXECUTE registroCliente('800-99-194', 'TODD', 'PARKS', 'STANLEY', '', 'TODD12404@MAIL.COM', '(871) 350-2985', 48, 221);
-EXECUTE registroCliente('800-99-195', 'ELAINE', 'HEATHER', 'DUTHIE', '', 'ELAINE12421@MAIL.COM', '(484) 303-9608', 44, 36);
-EXECUTE registroCliente('800-99-196', 'RAUL', 'PONCE', 'MIRANDA', 'ASDRUBAL', 'RAUL12756@MAIL.COM', '(526) 648-8494', 28, 164);
-EXECUTE registroCliente('800-99-197', 'RAFAEL', 'SOLIS', 'DIAZ', '', 'RAFAEL12758@MAIL.COM', '(696) 406-6174', 20, 164);
-EXECUTE registroCliente('800-99-198', 'DIVA', 'OLIVERA', 'DE', '', 'DIVA12773@MAIL.COM', '(731) 436-3900', 21, 198);
-EXECUTE registroCliente('800-99-199', 'CARLOS', 'PAVON', 'FLORES', 'GERARDO', 'CARLOS12841@MAIL.COM', '(976) 594-4457', 20, 92);
-EXECUTE registroCliente('800-99-200', 'LEONARDO', 'LEPIZ', 'ALFARO', 'JUAN', 'LEONARDO13068@MAIL.COM', '(580) 427-7005', 47, 198);
-EXECUTE registroCliente('800-99-201', 'MARGARITO', 'MARTINEZ', 'RODRIGUEZ', '', 'MARGARITO13222@MAIL.COM', '(716) 946-1488', 39, 198);
-EXECUTE registroCliente('800-99-202', 'JOSE', 'NUÑEZ', 'ALVAREZ', 'HECTOR', 'JOSE13230@MAIL.COM', '(547) 754-4511', 30, 164);
-EXECUTE registroCliente('800-99-203', 'RICARDO', 'BONILLA', 'SALGADO', 'ARTURO', 'RICARDO13248@MAIL.COM', '(426) 636-8404', 33, 92);
-EXECUTE registroCliente('800-99-204', 'FELIX', 'BUSTILLO', 'AVIDAN', '', 'FELIX13250@MAIL.COM', '(320) 848-4228', 39, 92);
-EXECUTE registroCliente('800-99-205', 'FERNANDO', 'ARGUETA', 'CORADO', '', 'FERNANDO13268@MAIL.COM', '(651) 818-5170', 53, 86);
-EXECUTE registroCliente('800-99-206', 'CARLOS', 'RUIZ', 'ANBEL', 'ROLANDO', 'CARLOS13269@MAIL.COM', '(479) 340-5079', 34, 86);
-EXECUTE registroCliente('800-99-207', 'ANSELMO', 'SIC', 'TAX', 'BASILIO', 'ANSELMO13335@MAIL.COM', '(975) 991-1058', 60, 86);
-EXECUTE registroCliente('800-99-208', 'JUAN', 'CANALES', 'SANTOS', 'CARLOS', 'JUAN13404@MAIL.COM', '(822) 813-0662', 25, 92);
-EXECUTE registroCliente('800-99-209', 'JORGE', 'CARCAMO', 'MANCIA', 'ALBERTO', 'JORGE13437@MAIL.COM', '(657) 238-1224', 22, 198);
-EXECUTE registroCliente('800-99-210', 'MANUEL', 'VAZQUEZ', 'DIAZ', 'SALVADOR', 'MANUEL13817@MAIL.COM', '(778) 991-5430', 64, 164);
-EXECUTE registroCliente('800-99-211', 'HECTOR', 'CRUZ', 'MARQUEZ', 'GRECORIO', 'HECTOR13944@MAIL.COM', '(406) 708-6367', 50, 164);
-EXECUTE registroCliente('800-99-212', 'JULIO', 'NAVARRETE', 'LEIRA', 'ERNESTO', 'JULIO13988@MAIL.COM', '(571) 899-6144', 43, 164);
-EXECUTE registroCliente('800-99-213', 'NELSON', 'PERALTA', 'CEDEÑO', 'ARIEL', 'NELSON14040@MAIL.COM', '(393) 880-4916', 33, 164);
-EXECUTE registroCliente('800-99-214', 'DEMUS', 'VARGAS', 'MORALES', 'RODRIGO', 'DEMUS14137@MAIL.COM', '(293) 391-0543', 31, 164);
-EXECUTE registroCliente('800-99-215', 'EUDES', 'LE', 'YVES', 'CLAUDE', 'EUDES14199@MAIL.COM', '(605) 735-3525', 59, 71);
-EXECUTE registroCliente('800-99-216', 'PETERS', 'JEFFREY', 'DEAN', '', 'PETERS14214@MAIL.COM', '(627) 362-7185', 40, 221);
-EXECUTE registroCliente('800-99-217', 'FRANCISCO', 'ROQUE', 'MOURY', '', 'FRANCISCO14217@MAIL.COM', '(753) 454-5146', 46, 221);
-EXECUTE registroCliente('800-99-218', 'NORMAN', 'LOPEZ', 'MARTINEZ', 'PETRONIO', 'NORMAN14292@MAIL.COM', '(234) 864-5012', 57, 221);
-EXECUTE registroCliente('800-99-219', 'JORGE', 'MICOPULUS', 'VELASCO', 'ELIAS', 'JORGE14448@MAIL.COM', '(726) 629-0457', 41, 148);
-EXECUTE registroCliente('800-99-220', 'PABLO', 'NUCKEL', 'PEREZ', 'JOSE', 'PABLO14538@MAIL.COM', '(658) 768-8237', 57, 53);
-EXECUTE registroCliente('800-99-221', 'MIGUEL', 'VANDERHAN', 'SAUCEDO', 'ANGEL', 'MIGUEL14610@MAIL.COM', '(583) 858-0973', 37, 164);
-EXECUTE registroCliente('800-99-222', 'KOENISSFEST', 'DE', 'ICAZA', 'ALFREDO', 'KOENISSFEST14713@MAIL.COM', '(711) 569-6128', 42, 164);
+EXECUTE registroCliente('800-99-145', 'MARCOS', 'ALVARADO', 'POVEDA', 'AURELIO', 'MARCOS9879@MAIL.COM', '(698) 889-4891', '25-JAN-1965', 'M', 47, 'Panamá', 'Chitre');
+EXECUTE registroCliente('800-99-146', 'MARCO', 'RODRIGUEZ', 'PRADO', 'H', 'MARCO9917@MAIL.COM', '(800) 515-7467','11-APR-1984', 'M', 47, 'Panamá', '');
+EXECUTE registroCliente('800-99-147', 'PEDRO', 'BARRANZA', 'GUTIERREZ', '', 'PEDRO9919@MAIL.COM', '(963) 472-3173', '19-NOV-1984', 'M', 47, 'Panamá', '');
+EXECUTE registroCliente('800-99-148', 'KARLA', 'WELCHERS', 'GIL', 'CRISTINA', 'KARLA9925@MAIL.COM', '(563) 841-5901','25-JAN-1990' 'F', 226, 'Panamá', '');
+EXECUTE registroCliente('800-99-149', 'EVELING', 'VICTOR', 'LOPEZ', 'JOHANNA', 'EVELING9950@MAIL.COM', '(215) 483-1128','15-AUG-1941',  'F', 156,'Panamá', '');
+EXECUTE registroCliente('800-99-150', 'FRANCISCO', 'MACHADO', 'PIZARRO', '', 'FRANCISCO9953@MAIL.COM', '(718) 699-3754','08-JAN-1976','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-151', 'RICARDO', 'IBARRA', 'LOPEZ', '', 'RICARDO9965@MAIL.COM', '(814) 877-9845', '20-DEC-1959','M', 156, 'Panamá', '');
+EXECUTE registroCliente('800-99-152', 'JORGE', 'REYES', 'MORA', 'SOCRATES', 'JORGE9967@MAIL.COM', '(720) 932-4515','29-NOV-1964','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-153', 'ADRIAN', 'ARAYA', 'QUESADA', '', 'ADRIAN9970@MAIL.COM', '(296) 572-1447','30-JUL-1966','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-154', 'JOSE', 'TREMINIO', 'ARCEDA', 'ERNESTO', 'JOSE9972@MAIL.COM', '(840) 470-0839','30-NOV-1989','M', 156,'Panamá', '');
+EXECUTE registroCliente('800-99-155', 'MARVIN', 'MARTINEZ', 'RUIZ', 'PASCUAL', 'MARVIN9978@MAIL.COM', '(447) 214-8351','14-FEB-1942','M', 221,'Panamá', 'Chitre');
+EXECUTE registroCliente('800-99-156', 'DAMIAN', 'DELGADO', 'UMAÑA', '', 'DAMIAN9992@MAIL.COM', '(614) 782-2559','14-JUN-1965','M', 221, 'Panamá', 'Aguadulce');
+EXECUTE registroCliente('800-99-157', 'JULIO', 'GUEVARA', 'CARDENAS', 'CESAR', 'JULIO9998@MAIL.COM', '(605) 207-6553','24-APR-1994', 'M', 156, 'Panamá', '');
+EXECUTE registroCliente('800-99-158', 'ERICK', 'NAVAS', 'LOPEZ', 'ROBERTO', 'ERICK10004@MAIL.COM', '(291) 784-5428', '12-APR-1978', 'M', 156, 'Panamá', '');
+EXECUTE registroCliente('800-99-159', 'JHONY', 'CAMARGO', 'APONTE', '', 'JHONY10009@MAIL.COM', '(885) 246-9627', '24-APR-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-160', 'MARVIN', 'OROZCO', 'BRAVO', '', 'MARVIN10018@MAIL.COM', '(410) 843-8848', '24-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-161', 'JAMIL', 'VIDAURRE', 'ALVAREZ', 'JOSUE', 'JAMIL10020@MAIL.COM', '(740) 233-9392', '24-APR-1994','M' , 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-162', 'MANUEL', 'ELIZONDO', 'FALLAS', 'ANTONIO', 'MANUEL10053@MAIL.COM', '(683) 380-2194', '24-APR-1994','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-163', 'CHRISTIAN', 'LOPEZ', 'DIAS', 'FELIPE', 'CHRISTIAN10057@MAIL.COM', '(718) 239-1416', '24-APR-1994','M' , 221,'Panamá', '');
+EXECUTE registroCliente('800-99-164', 'MICHAEL', 'CASTRO', 'HERRERA', '', 'MICHAEL10099@MAIL.COM', '(717) 401-2417', '24-APR-1994','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-165', 'LUIS', 'BERNAL', 'CARRERA', 'ANTONIO', 'LUIS10128@MAIL.COM', '(209) 934-2057', '24-APR-1994','M' , 164,'Panamá', '');
+EXECUTE registroCliente('800-99-166', 'LUIS', 'CENTENO', 'ARGUEDAS', '', 'LUIS10149@MAIL.COM', '(336) 671-8952', '24-APR-1994','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-167', 'HERNAN', 'COTO', 'VARGAS', 'JOSE', 'HERNAN10150@MAIL.COM', '(627) 856-2837', '24-APR-1994','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-168', 'OSWALD', 'ICAZA', 'CHAPMAN', 'RAMON', 'OSWALD10152@MAIL.COM', '(289) 320-4690', '24-APR-1994','M', 164,'Panamá', '');
+EXECUTE registroCliente('800-99-169', 'EDWIN', 'ESPINOSA', 'ZABALLOS', 'ROBERTO', 'EDWIN10167@MAIL.COM', '(393) 817-7489', '24-APR-1994','M', 164,'Panamá', '');
+EXECUTE registroCliente('800-99-170', 'CARLOS', 'ARGEÑAL', 'ODIO', 'MANUEL', 'CARLOS10173@MAIL.COM', '(874) 383-0296', '24-APR-1994','M', 156,'Panamá', '');
+EXECUTE registroCliente('800-99-171', 'EVERTH', 'HERRERA', 'RAMOS', 'JOSE', 'EVERTH10192@MAIL.COM', '(819) 848-4270', '24-APR-1994','M', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-172', 'ANGELICA', 'QUESADA', 'VILLEGAS', '', 'ANGELICA10195@MAIL.COM', '(567) 284-6125', '24-APR-1994','F', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-173', 'PATRICIA', 'V.', 'ALVARENGA', '', 'PATRICIA10198@MAIL.COM', '(558) 767-0282', '24-APR-1994','F', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-174', 'BLANCA', 'HERRERA', 'VIQUEZ', 'IRMA', 'BLANCA10209@MAIL.COM', '(723) 477-6442', '24-APR-1994','F', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-175', 'MOISES', 'TORREZ', 'HERNANDEZ', '', 'MOISES10223@MAIL.COM', '(385) 707-3076', '24-APR-1994','M', 156,'Panamá', '');
+EXECUTE registroCliente('800-99-176', 'JUAN', 'BAEZ', 'OJEDA', 'ROLANDO', 'JUAN10237@MAIL.COM', '(643) 232-9213', '24-APR-1994','M', 156, 'Panamá', '');
+EXECUTE registroCliente('800-99-177', 'MARTHA', 'LAGUNA', 'LANUZA', '', 'MARTHA10244@MAIL.COM', '(906) 876-1848', '24-APR-1994','F', 221,'Panamá', '');
+EXECUTE registroCliente('800-99-178', 'DANILO', 'CASCANTE', 'DURAN', '', 'DANILO10255@MAIL.COM', '(215) 467-3942', '24-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-179', 'MAX', 'CUTILLAS', 'HERNANDEZ', 'ULISES', 'MAX10896@MAIL.COM', '(203) 828-1100', '24-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-180', 'MAXVIDAL', 'PEREZ', 'ALONZO', '', 'MAXVIDAL10898@MAIL.COM', '(669) 961-9093', '24-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-181', 'ANA', 'HERNANDEZ', 'CANO', 'JULIA', 'ANA10906@MAIL.COM', '(945) 531-6686', '24-APR-1994','F', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-182', 'MAURICIO', 'CARRANZA', 'CASTRO', 'ALBERTO', 'MAURICIO10912@MAIL.COM', '(677) 273-1606','24-APR-1994' ,'M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-183', 'CARLOS', 'CESPEDES', 'CASCANTE', 'FRANCIS', 'CARLOS10915@MAIL.COM', '(731) 772-3521','24-APR-1994' ,'M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-184', 'JIMMY', 'NORORI', 'ALVARADO', 'JOSE', 'JIMMY10917@MAIL.COM', '(969) 808-0512', '27-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-185', 'FRANCISCO', 'SANCHEZ', 'LEON', 'ALBERTO', 'FRANCISCO10930@MAIL.COM', '(959) 584-1775', '11-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-186', 'ISIDRO', 'CASCO', 'AVELAREZ', 'EUSEBRO', 'ISIDRO10935@MAIL.COM', '(765) 506-9345', '14-APR-1994','M', 156,'Panamá', '');
+EXECUTE registroCliente('800-99-187', 'EDWIN', 'RIOS', 'DAVIS', 'DANIEL', 'EDWIN11007@MAIL.COM', '(320) 623-4695', '13-APR-1994','M', 164,'Panamá', '');
+EXECUTE registroCliente('800-99-188', 'OSCAR', 'TORRES', 'PATIÑO', 'ARSENIO', 'OSCAR11027@MAIL.COM', '(325) 787-5793', '24-APR-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-189', 'JORGE', 'SOTO', 'SEGURO', 'GERARDO', 'JORGE11114@MAIL.COM', '(931) 373-0849', '20-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-190', 'JACKELINE', 'TEJADA', 'MURILLO', 'GRISSEL', 'JACKELINE11248@MAIL.COM', '(324) 422-3262', '29-APR-1994','F', 92, 'Panamá', '');
+EXECUTE registroCliente('800-99-191', 'RAFAEL', 'CORPAS', 'MALDONADO', '', 'RAFAEL11454@MAIL.COM', '(310) 661-9757', '28-APR-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-192', 'CHRISTOPH', 'FELBER', 'FRANZ', '', 'CHRISTOPH11947@MAIL.COM', '(515) 707-7004', '27-APR-1994','M', 13, 'Panamá', '');
+EXECUTE registroCliente('800-99-193', 'CARLOS', 'G.', 'HERNANDEZ', 'JOSE', 'CARLOS12396@MAIL.COM', '(802) 901-2929', '26-APR-1994','M', 148, 'Panamá', '');
+EXECUTE registroCliente('800-99-194', 'TODD', 'PARKS', 'STANLEY', '', 'TODD12404@MAIL.COM', '(871) 350-2985', '25-APR-1994','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-195', 'ELAINE', 'HEATHER', 'DUTHIE', '', 'ELAINE12421@MAIL.COM', '(484) 303-9608', '24-APR-1994','F', 36, 'Panamá', '');
+EXECUTE registroCliente('800-99-196', 'RAUL', 'PONCE', 'MIRANDA', 'ASDRUBAL', 'RAUL12756@MAIL.COM', '(526) 648-8494', '23-APR-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-197', 'RAFAEL', 'SOLIS', 'DIAZ', '', 'RAFAEL12758@MAIL.COM', '(696) 406-6174', '22-APR-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-198', 'DIVA', 'OLIVERA', 'DE', '', 'DIVA12773@MAIL.COM', '(731) 436-3900', '21-APR-1994','F', 198, 'Panamá', '');
+EXECUTE registroCliente('800-99-199', 'CARLOS', 'PAVON', 'FLORES', 'GERARDO', 'CARLOS12841@MAIL.COM', '(976) 594-4457', '20-APR-1994','M', 92, 'Panamá', '');
+EXECUTE registroCliente('800-99-200', 'LEONARDO', 'LEPIZ', 'ALFARO', 'JUAN', 'LEONARDO13068@MAIL.COM', '(580) 427-7005', '19-APR-1994','M', 198, 'Panamá', '');
+EXECUTE registroCliente('800-99-201', 'MARGARITO', 'MARTINEZ', 'RODRIGUEZ', '', 'MARGARITO13222@MAIL.COM', '(716) 946-1488', '18-APR-1994','M', 198, 'Panamá', '');
+EXECUTE registroCliente('800-99-202', 'JOSE', 'NUÑEZ', 'ALVAREZ', 'HECTOR', 'JOSE13230@MAIL.COM', '(547) 754-4511', '17-APR-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-203', 'RICARDO', 'BONILLA', 'SALGADO', 'ARTURO', 'RICARDO13248@MAIL.COM', '(426) 636-8404', '16-APR-1994','M', 92, 'Panamá', '');
+EXECUTE registroCliente('800-99-204', 'FELIX', 'BUSTILLO', 'AVIDAN', '', 'FELIX13250@MAIL.COM', '(320) 848-4228', '15-APR-1994','M', 92, 'Panamá', '');
+EXECUTE registroCliente('800-99-205', 'FERNANDO', 'ARGUETA', 'CORADO', '', 'FERNANDO13268@MAIL.COM', '(651) 818-5170', '14-APR-1994','M', 86, 'Panamá', '');
+EXECUTE registroCliente('800-99-206', 'CARLOS', 'RUIZ', 'ANBEL', 'ROLANDO', 'CARLOS13269@MAIL.COM', '(479) 340-5079', '13-APR-1994','M', 86, 'Panamá', '');
+EXECUTE registroCliente('800-99-207', 'ANSELMO', 'SIC', 'TAX', 'BASILIO', 'ANSELMO13335@MAIL.COM', '(975) 991-1058', '12--1994','M', 86, 'Panamá', '');
+EXECUTE registroCliente('800-99-208', 'JUAN', 'CANALES', 'SANTOS', 'CARLOS', 'JUAN13404@MAIL.COM', '(822) 813-0662', '11-APR-1994','M', 92, 'Panamá', '');
+EXECUTE registroCliente('800-99-209', 'JORGE', 'CARCAMO', 'MANCIA', 'ALBERTO', 'JORGE13437@MAIL.COM', '(657) 238-1224', '10-MAR-1994','M', 198, 'Panamá', '');
+EXECUTE registroCliente('800-99-210', 'MANUEL', 'VAZQUEZ', 'DIAZ', 'SALVADOR', 'MANUEL13817@MAIL.COM', '(778) 991-5430', '21-FEB-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-211', 'HECTOR', 'CRUZ', 'MARQUEZ', 'GRECORIO', 'HECTOR13944@MAIL.COM', '(406) 708-6367', '21-JAN-1994','M', 164,  'Panamá', '');
+EXECUTE registroCliente('800-99-212', 'JULIO', 'NAVARRETE', 'LEIRA', 'ERNESTO', 'JULIO13988@MAIL.COM', '(571) 899-6144', '12-NOV-1992','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-213', 'NELSON', 'PERALTA', 'CEDEÑO', 'ARIEL', 'NELSON14040@MAIL.COM', '(393) 880-4916', '24-DEC-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-214', 'DEMUS', 'VARGAS', 'MORALES', 'RODRIGO', 'DEMUS14137@MAIL.COM', '(293) 391-0543', '24-SEP-1974','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-215', 'EUDES', 'LE', 'YVES', 'CLAUDE', 'EUDES14199@MAIL.COM', '(605) 735-3525', '17-JUN-1934','M', 71, 'Panamá', '');
+EXECUTE registroCliente('800-99-216', 'PETERS', 'JEFFREY', 'DEAN', '', 'PETERS14214@MAIL.COM', '(627) 362-7185', '23-MAY-1978','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-217', 'FRANCISCO', 'ROQUE', 'MOURY', '', 'FRANCISCO14217@MAIL.COM', '(753) 454-5146', '20-APR-1964','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-218', 'NORMAN', 'LOPEZ', 'MARTINEZ', 'PETRONIO', 'NORMAN14292@MAIL.COM', '(234) 864-5012', '24-OCT-1986','M', 221, 'Panamá', '');
+EXECUTE registroCliente('800-99-219', 'JORGE', 'MICOPULUS', 'VELASCO', 'ELIAS', 'JORGE14448@MAIL.COM', '(726) 629-0457', '04-FEB-1985','M', 148, 'Panamá', '');
+EXECUTE registroCliente('800-99-220', 'PABLO', 'NUCKEL', 'PEREZ', 'JOSE', 'PABLO14538@MAIL.COM', '(658) 768-8237', '21-MAR-1974','M', 53, 'Panamá', '');
+EXECUTE registroCliente('800-99-221', 'MIGUEL', 'VANDERHAN', 'SAUCEDO', 'ANGEL', 'MIGUEL14610@MAIL.COM', '(583) 858-0973', '23-JAM-1994','M', 164, 'Panamá', '');
+EXECUTE registroCliente('800-99-222', 'KOENISSFEST', 'DE', 'ICAZA', 'ALFREDO', 'KOENISSFEST14713@MAIL.COM', '(711) 569-6128', '14-APR-1993','M', 164, 'Panamá', '');
 
 ----Actualizar guias----
 
@@ -1293,17 +1305,100 @@ UPDATE GUIAS SET
   fecha_ingreso = SYSDATE
 where id_guia = 2;
 
-EXECUTE registroGuia ('2-589-156', 'Jack', 'Salazar', 'jack.salazar@outlook.com', '68707239', 'Panamá', 'Ciudad de Panamá','M','15-SEP-1992');
-EXECUTE registroGuia ('N-58-789', 'Thiago', 'Cutire', 'thiago.cutire@outlook.com', '68707239','Panamá', 'Ciudad de Panamá','M', '23-OCT-1996');
-EXECUTE registroGuia ('6-789-589', 'Estella', 'Cutire', 'jasmine.cutire@outlook.com', '68707239', 'Panamá', 'Ciudad de Panamá','F', '12-DEC-2000');
+EXECUTE registroGuia ('2-589-156', 'Jack', 'Salazar', 'jack.salazar@outlook.com', '68307239', 'Panamá', 'Ciudad de Panamá','M','15-SEP-1992');
+EXECUTE registroGuia ('N-58-789', 'Thiago', 'Cutire', 'thiago.cutire@outlook.com', '68907239','Panamá', 'Ciudad de Panamá','M', '23-OCT-1996');
+EXECUTE registroGuia ('8-58-789', 'Jasmine', 'Cutire', 'jasmine.cutire@outlook.com', '68907239','Panamá', 'Ciudad de Panamá','F', '12-DEC-1996');
 
+-- EXECUTE registroGuia ('6-789-589', 'Jasmine', 'Cutire', 'jasmine.cutire@outlook.com', '68507239', 'Panamá', 'Ciudad de Panamá','F', '12-DEC-2000');
+
+-- UPDATES
+UPDATE DESTINOS SET 
+  coordenadas = '9.14369608292388, -79.73955911092854',
+  fecha_ingreso = SYSDATE
+where id_destinos = 1;
+
+UPDATE DESTINOS SET 
+  coordenadas = '8.933175183920792, -79.54472113068768',
+  fecha_ingreso = SYSDATE
+where id_destinos = 2;
+
+
+UPDATE DESTINOS SET 
+  coordenadas = '8.952929715885642, -79.53602427050633',
+  fecha_ingreso = SYSDATE
+where id_destinos = 3;
+
+----Execute----
+EXECUTE registroDestino('Panamá Viejo', '9.006795767655342, -79.48521125249091');
+EXECUTE registroDestino('Portobelo', '9.553700513834134, -79.6571566187573');
+EXECUTE registroDestino('San Blas', '9.588879656128823, -78.70181560341317');
+EXECUTE registroDestino('Isla Grande', '9.635207710011752, -79.5647800721087');
+EXECUTE registroDestino('Valle de Antón', '8.617642361667896, -80.13350501585857');
+EXECUTE registroDestino('Cerro Azul', '9.231093376931321, -79.40849646702256');
+EXECUTE registroDestino('Volcán Barú', '8.809192431066274, -82.54293986928006');
+EXECUTE registroDestino('Archipiélago de las perlas', '8.488942531158493, -78.97550508992742');
+EXECUTE registroDestino('Boquete', '8.777260734178117, -82.44951807768413');
+EXECUTE registroDestino('Cerro Ancón', '8.95997475718351, -79.547817779238433');
+EXECUTE registroDestino('Punta chame', '8.642885653161462, -79.70915821101356');
+EXECUTE registroDestino('Calzada amador', '8.915900202565433, -79.53301257587526');
+EXECUTE registroDestino('Bocas del Toro', '9.290079231354605, -82.67968961046321');
+EXECUTE registroDestino('Ninguno', '-');
 
 
 ---Execute---
 ---TOURS---
+/*
+CREATE OR REPLACE PROCEDURE registroTour(
+    p_nombre          IN tours.tour_nombre%TYPE,
+    p_duracion        IN tours.duracion%TYPE,
+    p_descripcion     IN tours.descripcion%TYPE,
+    p_precio          IN tours.precio%TYPE,
+    p_cupos           IN tours.cantidad_cupos%TYPE,
+    p_dificultad      IN tours.id_dificultad%TYPE,
+    p_guia            IN tours.id_guia%TYPE,
+    p_id_promo        IN tours.id_promo%TYPE,
+    p_destino1        number,
+    p_destino2        number,
+    p_destino3        number)
+
+    TOUR
+
+    ID_TOURS	NOT NULL	NUMBER
+    TOUR_NOMBRE	NOT NULL	VARCHAR2(45)
+    DURACION	NOT NULL	NUMBER
+    DESCRIPCION	NOT NULL	VARCHAR2(250)
+    PRECIO	NOT NULL	NUMBER
+    CANTIDAD_CUPOS	NOT NULL	NUMBER
+    ID_DIFICULTAD	NOT NULL	NUMBER
+    ID_GUIA	NOT NULL	NUMBER
+    STATUS		CHAR(2)
+    CALIFICACION		NUMBER(1)
+    ID_PROMO		NUMBER
+    PROMOCION		NUMBER
+    FECHA_MOD		DATE
+     
+    CREATE TABLE TOURS (id_tours NUMBER NOT NULL,
+  tour_nombre VARCHAR2(45) NOT NULL,
+  duracion NUMBER NOT NULL,
+  descripcion VARCHAR2(250) NOT NULL,
+  precio number NOT NULL,
+  cantidad_cupos number not null,
+  id_dificultad NUMBER NOT NULL,
+  id_guia NUMBER NOT NULL,
+  CONSTRAINT pk_id_tours PRIMARY KEY (id_tours),
+  CONSTRAINT fk_id_dificultad
+    FOREIGN KEY (id_dificultad)
+    REFERENCES DIFICULTAD (id_dificultad),
+  CONSTRAINT fk_id_guia
+    FOREIGN KEY (id_guia)
+    REFERENCES GUIAS (id_guia)
+);
+
+
+*/ 
 INSERT INTO TOURS VALUES (1, 'Tour de la ciudad y el Canal de Panamá ', 6, 'Conoce los mejores lugares en la ciudad de Panamá.', 67, 20, 1, 1);
 INSERT INTO TOURS VALUES (2, 'Tour privado centro histórico de Panamá', 8, 'La historia de Panamá en un tour.', 100, 5, 1, 2);
-INSERT INTO TOURS VALUES (3, 'Ven a San Blas ', 16, 'Las maravillas de la isla San Blas.', 89, 30, 2, 3);
+INSERT INTO TOURS VALUES (3, 'Ven a San Blas', 16, 'Las maravillas de la isla San Blas.', 89, 30, 2, 3);
 INSERT INTO TOURS VALUES (4, 'Portobelo y destinos del caribe de Panamá', 12, 'Sé parte de la experiencia de Colón y el caribe panameño.', 90, 15, 1, 4);
 INSERT INTO TOURS VALUES (5, 'Ida al Valle de Antón', 10, 'Experimenta el valle de Antón.', 120, 20, 2, 5);
 INSERT INTO TOURS VALUES (6, 'Tour al volcán Barú', 72, 'Un tour al volcán Barú a pie.', 150, 20, 3, 1);
@@ -1311,13 +1406,13 @@ INSERT INTO TOURS VALUES (7, 'Tour al volcán Barú en 4x4', 48, 'Un tour al vol
 INSERT INTO TOURS VALUES (8, 'Ven a Bocas del Toro', 20, 'Playas, buen clima, restaurantes para disfrutar en Bocas del Toro.', 190, 20, 1, 3);
 INSERT INTO TOURS VALUES (9, 'La isla de las Flores', 9, 'La isla de las Flores tiene mucho que ofrecer a sus clientes.', 150, 15, 2, 4);
 INSERT INTO TOURS VALUES (10, 'El Archipiélago de las Perlas', 6, 'El Archipielago de las Perlas da una gran experiencia para la familia.', 80, 12, 1, 5);
-
+EXECUTE registroTour('Ven a San Blas',16,'Las maravillas de la isla San Blas',89,60,1,1,2,6,17,15);
 
 ----Execute----
 -----RESERVACION---
 
 /*
--- PARAMETROS
+-- PARAMETROS PROCEDIMIENTO REGISTRO_RESERVA
 
    p_id_cliente         IN clientes.id_cliente%TYPE,
     p_id_tour            IN reserva_tours.id_tour1%TYPE,
@@ -1330,7 +1425,7 @@ INSERT INTO TOURS VALUES (10, 'El Archipiélago de las Perlas', 6, 'El Archipiel
 INSERT INTO RESERVACION VALUES (1, 9333, TO_DATE('02-01-2019','DD-MM-YYYY'),1);
 INSERT INTO RESERVACION VALUES (2, 10020,TO_DATE('03-01-2019','DD-MM-YYYY'),2);
 INSERT INTO RESERVACION VALUES (3, 10057,TO_DATE('04-01-2019','DD-MM-YYYY'),5);
-EXECUTE registroReserva(4,4,1,TO_DATE('05-01-2019','DD-MM-YYYY'));
+EXECUTE registroReserva(2,2,4,TO_DATE('05-01-2019','DD-MM-YYYY'));
 INSERT INTO RESERVACION VALUES (5, 14713,TO_DATE('09-01-2019','DD-MM-YYYY'),4);
 INSERT INTO RESERVACION VALUES (6, 12396,TO_DATE('11-01-2019','DD-MM-YYYY'),3);
 INSERT INTO RESERVACION VALUES (7, 9251, TO_DATE('12-01-2019','DD-MM-YYYY'),3);
@@ -1590,25 +1685,6 @@ INSERT INTO RESERVA_TOURS VALUES( 99, 7, TO_DATE('01-12-2019','DD-MM-YYYY'), TO_
 INSERT INTO RESERVA_TOURS VALUES( 100, 3, TO_DATE('30-11-2019','DD-MM-YYYY'), TO_DATE('30-11-2019','DD-MM-YYYY'));
 INSERT INTO RESERVA_TOURS VALUES( 100, 8, TO_DATE('01-12-2019','DD-MM-YYYY'), TO_DATE('01-12-2019','DD-MM-YYYY'));
 
-
-----Execute----
------DESTINOS---
-INSERT INTO DESTINOS VALUES (1,'Canal de Panamá');
-INSERT INTO DESTINOS VALUES (2,'Biomuseo');
-INSERT INTO DESTINOS VALUES (3,'Casco Antiguo');
-INSERT INTO DESTINOS VALUES (4,'Panamá Viejo');
-INSERT INTO DESTINOS VALUES (5,'Portobelo');
-INSERT INTO DESTINOS VALUES (6,'San Blas');
-INSERT INTO DESTINOS VALUES (7,'Isla Grande');
-INSERT INTO DESTINOS VALUES (8,'Valle de Antón');
-INSERT INTO DESTINOS VALUES (9,'Cerro Azul');
-INSERT INTO DESTINOS VALUES (10,'Volcan Barú');
-INSERT INTO DESTINOS VALUES (11,'Archipiélago de las perlas');
-INSERT INTO DESTINOS VALUES (12,'Boquete');
-INSERT INTO DESTINOS VALUES (13,'Cerro Ancón');
-INSERT INTO DESTINOS VALUES (14,'Punta chame');
-INSERT INTO DESTINOS VALUES (15,'Calzada amador');
-INSERT INTO DESTINOS VALUES (16,'Bocas del Toro');
 
 
 ----Trigger----
