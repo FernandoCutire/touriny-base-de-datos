@@ -441,7 +441,7 @@ INSERT INTO PAIS VALUES (238, 'Zimbabue ');
 --INSERTAR CLIENTES--
 INSERT INTO CLIENTES VALUES(8977, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'ANTONIO', 'JUAN8977@MAIL.COM', '(337) 308-5133', 59, 198);
 INSERT INTO CLIENTES VALUES(9010, '800-99-124', 'KREVITH', 'BEITIA', 'SHAW', 'HOLBERT', 'KREVITH9010@MAIL.COM', '(554) 887-4705', 57, 164);
-INSERT INTO CLIENTES VALUES(9067, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
+INSERT INTO CLIENTES VALUES(10057, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
 
 --INSERTAR GUIA--
 INSERT INTO GUIAS VALUES (1, '8-456-875', 'Fernando', 'Diaz', 'fernando.diaz@outlook.com', '68707239', 20, 'Ciudad de Panamá');
@@ -678,8 +678,9 @@ BEGIN
        DBMS_OUTPUT.PUT_LINE('💣 Error: Fecha no valida.');
 END calcularEdadCliente;
 /
-
+-------------------------------------------------
 --Funcion para calcular horas
+------------------------------------------------
 create or replace function calcularhoras(l_horas number)
 return number IS
 v_dias number;
@@ -700,9 +701,9 @@ EXCEPTION
        DBMS_OUTPUT.PUT_LINE('💣 Error: hora ingresada no valida.');
 END calcularhoras;
 /
-
+----------------------------------------
 --Funcion para aplicar descuento
-
+-------------------------------------------------------
 create or replace function descuento(descuento number, precio number)
 return number IS
 v_resultado number;
@@ -1143,10 +1144,7 @@ where id_promo = no_promocion;
 END activarPromo;
 /
 
-EXECUTE registroPromociones('Black Friday',11,12,0.35);
-EXECUTE registroPromociones('Navidad', 12, 1, 0.5);
-EXECUTE registroPromociones('Aniversario', 6, 7, 0.25);
-EXECUTE registroPromociones('Rebajas de enero', 1, 2, 0.20);
+
 
 
 
@@ -1247,7 +1245,15 @@ END ACTUALIZAR_AUDITORIA;
 
 
 
+-------------------------------------------------------------------
+-- INVOCACIONES A LOS PROCEDIMIENTOS
+-------------------------------------------------------------------
 
+--ACTIVACION DE LAS PROMOCIONES
+EXECUTE registroPromociones('Black Friday',11,12,0.35);
+EXECUTE registroPromociones('Navidad', 12, 1, 0.5);
+EXECUTE registroPromociones('Aniversario', 6, 7, 0.25);
+EXECUTE registroPromociones('Rebajas de enero', 1, 2, 0.20);
 
 
 -----UPDATE PARA LOS DATOS ANTERIORES---
@@ -1418,7 +1424,9 @@ UPDATE DESTINOS SET
   fecha_ingreso = SYSDATE
 where id_destinos = 3;
 
-----Execute----
+-------------------------------------------------------------------------------
+---INVOCACION PROCEDIMIENTO INSERTAR DESTINOS
+--------------------------------------------------------------------------------
 EXECUTE registroDestino('Panamá Viejo', '9.006795767655342, -79.48521125249091');
 EXECUTE registroDestino('Portobelo', '9.553700513834134, -79.6571566187573');
 EXECUTE registroDestino('San Blas', '9.588879656128823, -78.70181560341317');
@@ -1436,7 +1444,9 @@ EXECUTE registroDestino('Ninguno', '-');
 
 
 
-
+--------------------------------------------------------------------------------------------
+--- INVOCACION PROCEDIMIENTO REGISTRO DE TOURS
+--------------------------------------------------------------------------------------------
 UPDATE TOURS SET
   id_promo = 1,
   calificacion = 0,
@@ -1457,6 +1467,11 @@ EXECUTE registroTour('Ven a Bocas del Toro', 20, 'Playas, buen clima, restaurant
 EXECUTE registroTour('La isla de las Flores', 9, 'La isla de las Flores tiene mucho que ofrecer a sus clientes.', 150, 15, 2, 4, 4, 8,9,17  );
 EXECUTE registroTour('El Archipiélago de las Perlas', 6, 'El Archipielago de las Perlas da una gran experiencia para la familia.', 80, 12, 3, 2, 4, 6, 7, 17);
 
+
+
+--------------------------------------------------------------------------------------------
+--- INVOCACION PROCEDIMIENTO REGISTRO DE TOURS
+--------------------------------------------------------------------------------------------
 
 EXECUTE registroReserva(4,3,4,TO_DATE('05-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(5,2,4,TO_DATE('09-01-2022','DD-MM-YYYY'));
@@ -1553,6 +1568,8 @@ EXECUTE registroReserva(95, 4,2,TO_DATE('25-11-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(96, 4,2,TO_DATE('20-12-2022','DD-MM-YYYY'));
 
 
+----Trigger----
+
 
 EXECUTE activarPromo(1);
 EXECUTE activarPromo(2);
@@ -1580,14 +1597,9 @@ EXECUTE registroReview(84,5,'Mi primera vez en el volcan, no me arrepiento',4);
 EXECUTE registroReview(81,7,'Un viaje algo largo',3);
 EXECUTE registroReview(75,8,'Me la pase muy bien en Familia, recomendado',5);
 
-/*
-create or replace procedure registrarFactura(
-    l_no_reserva      in facturacion.id_reserva%TYPE,
-    l_id_cliente      in facturacion.id_cliente%TYPE,
-    l_monto           in facturacion.monto_pago%TYPE,
-    l_tipo_transac    in facturacion.tipo_transac%TYPE
-)
-*/
+
+
+
 EXECUTE registrarFactura (4,5,29,'CO');
 EXECUTE registrarFactura (5,6,29,'CO');
 EXECUTE registrarFactura (6,7,29,'CO');
@@ -1615,7 +1627,6 @@ EXECUTE registrarFactura (22,25,45,'CA');
 --------------------------------------------------
 
 set SERVEROUTPUT on;
-
 
 -----CREACION DE LAS VISTAS----
 
@@ -1708,7 +1719,7 @@ ORDER BY COUNT(t.ID_PROMO) DESC;
 
 --10 MONTO DE FACTURACIÓN
 
-CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT (r.fecha_reserva) as "FECHA", COUNT(f.monto_pago) "MONTO"
+CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT (r.fecha_reserva) as "FECHA", SUM(f.monto_pago) "MONTO"
 FROM RESERVACION r
     INNER JOIN FACTURACION f ON f.id_reserva = r.id_reserva 
     GROUP BY r.fecha_reserva
