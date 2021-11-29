@@ -923,13 +923,12 @@ CREATE TABLE AUDITORIA (
 
 CREATE TABLE PROMOCIONES(
   id_promo NUMBER NOT NULL,
-  descipcion NUMBER NOT NULL,
+  descripcion VARCHAR2(250) NOT NULL,
   mes_inicio NUMBER DEFAULT 0,
   mes_fin NUMBER DEFAULT 0,
   promocion NUMBER DEFAULT 0,
   CONSTRAINT pk_promocion PRIMARY KEY (id_promo)
 );
-
 
 -- -----------------------------------------------------
 -- 2- MODIFICACION DE LAS TABLAS
