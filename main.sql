@@ -1435,57 +1435,7 @@ EXECUTE registroDestino('Bocas del Toro', '9.290079231354605, -82.67968961046321
 EXECUTE registroDestino('Ninguno', '-');
 
 
----Execute---
----TOURS---
-/*
-CREATE OR REPLACE PROCEDURE registroTour(
-    p_nombre          IN tours.tour_nombre%TYPE,
-    p_duracion        IN tours.duracion%TYPE,
-    p_descripcion     IN tours.descripcion%TYPE,
-    p_precio          IN tours.precio%TYPE,
-    p_cupos           IN tours.cantidad_cupos%TYPE,
-    p_dificultad      IN tours.id_dificultad%TYPE,
-    p_guia            IN tours.id_guia%TYPE,
-    p_id_promo        IN tours.id_promo%TYPE,
-    p_destino1        number,
-    p_destino2        number,
-    p_destino3        number)
 
-    TOUR
-
-    ID_TOURS	NOT NULL	NUMBER
-    TOUR_NOMBRE	NOT NULL	VARCHAR2(45)
-    DURACION	NOT NULL	NUMBER
-    DESCRIPCION	NOT NULL	VARCHAR2(250)
-    PRECIO	NOT NULL	NUMBER
-    CANTIDAD_CUPOS	NOT NULL	NUMBER
-    ID_DIFICULTAD	NOT NULL	NUMBER
-    ID_GUIA	NOT NULL	NUMBER
-    STATUS		CHAR(2)
-    CALIFICACION		NUMBER(1)
-    ID_PROMO		NUMBER
-    PROMOCION		NUMBER
-    FECHA_MOD		DATE
-     
-    CREATE TABLE TOURS (id_tours NUMBER NOT NULL,
-  tour_nombre VARCHAR2(45) NOT NULL,
-  duracion NUMBER NOT NULL,
-  descripcion VARCHAR2(250) NOT NULL,
-  precio number NOT NULL,
-  cantidad_cupos number not null,
-  id_dificultad NUMBER NOT NULL,
-  id_guia NUMBER NOT NULL,
-  CONSTRAINT pk_id_tours PRIMARY KEY (id_tours),
-  CONSTRAINT fk_id_dificultad
-    FOREIGN KEY (id_dificultad)
-    REFERENCES DIFICULTAD (id_dificultad),
-  CONSTRAINT fk_id_guia
-    FOREIGN KEY (id_guia)
-    REFERENCES GUIAS (id_guia)
-);
-
-
-*/ 
 
 UPDATE TOURS SET
   id_promo = 1,
@@ -1507,43 +1457,7 @@ EXECUTE registroTour('Ven a Bocas del Toro', 20, 'Playas, buen clima, restaurant
 EXECUTE registroTour('La isla de las Flores', 9, 'La isla de las Flores tiene mucho que ofrecer a sus clientes.', 150, 15, 2, 4, 4, 8,9,17  );
 EXECUTE registroTour('El Archipiélago de las Perlas', 6, 'El Archipielago de las Perlas da una gran experiencia para la familia.', 80, 12, 3, 2, 4, 6, 7, 17);
 
-/*
-   p_nombre          IN tours.tour_nombre%TYPE,
-    p_duracion        IN tours.duracion%TYPE,
-    p_descripcion     IN tours.descripcion%TYPE,
-    p_precio          IN tours.precio%TYPE,
-    p_cupos           IN tours.cantidad_cupos%TYPE,
-    p_dificultad      IN tours.id_dificultad%TYPE,
-    p_guia            IN tours.id_guia%TYPE,
-    p_id_promo        IN tours.id_promo%TYPE,
-    p_destino1        number,
-    p_destino2        number,
-    p_destino3        number)
-    
 
-
-
-
-
-----Execute----
------RESERVACION---
-
-/*
--- PARAMETROS PROCEDIMIENTO REGISTRO_RESERVA
-
-   p_id_cliente         IN clientes.id_cliente%TYPE,
-    p_id_tour            IN reserva_tours.id_tour1%TYPE,
-    p_cantidad_personas  IN reserva_tours.cantidad_personas%TYPE,
-    p_fecha_inicio       IN reserva_tours.fecha_inicio%TYPE
-
-*/
--- PRIMERO CREAR TOURS
--- CAMBIAR CADA UNO PARA que quede segun la secuencia
-/*
-INSERT INTO RESERVACION VALUES (1, 9333, TO_DATE('02-01-2022','DD-MM-YYYY'),1);
-INSERT INTO RESERVACION VALUES (2, 10020,TO_DATE('03-01-2022','DD-MM-YYYY'),2);
-INSERT INTO RESERVACION VALUES (3, 10057,TO_DATE('04-01-2022','DD-MM-YYYY'),5);
-*/
 EXECUTE registroReserva(4,3,4,TO_DATE('05-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(5,2,4,TO_DATE('09-01-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(6,6,3,TO_DATE('11-01-2022','DD-MM-YYYY'));
@@ -1639,8 +1553,6 @@ EXECUTE registroReserva(95, 4,2,TO_DATE('25-11-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(96, 4,2,TO_DATE('20-12-2022','DD-MM-YYYY'));
 
 
-----Trigger----
-
 
 EXECUTE activarPromo(1);
 EXECUTE activarPromo(2);
@@ -1668,6 +1580,33 @@ EXECUTE registroReview(84,5,'Mi primera vez en el volcan, no me arrepiento',4);
 EXECUTE registroReview(81,7,'Un viaje algo largo',3);
 EXECUTE registroReview(75,8,'Me la pase muy bien en Familia, recomendado',5);
 
+/*
+create or replace procedure registrarFactura(
+    l_no_reserva      in facturacion.id_reserva%TYPE,
+    l_id_cliente      in facturacion.id_cliente%TYPE,
+    l_monto           in facturacion.monto_pago%TYPE,
+    l_tipo_transac    in facturacion.tipo_transac%TYPE
+)
+*/
+EXECUTE registrarFactura (4,5,29,'CO');
+EXECUTE registrarFactura (5,6,29,'CO');
+EXECUTE registrarFactura (6,7,29,'CO');
+EXECUTE registrarFactura (7,8,29,'CA');
+EXECUTE registrarFactura (8,9,29,'CO');
+EXECUTE registrarFactura (9,10,2,'CO');
+EXECUTE registrarFactura (10,11,45,'CO');
+EXECUTE registrarFactura (11,12,45,'CO');
+EXECUTE registrarFactura (12,15,45,'CO');
+EXECUTE registrarFactura (13,16,45,'CA');
+EXECUTE registrarFactura (14,17,45,'CO');
+EXECUTE registrarFactura (15,18,45,'CO');
+EXECUTE registrarFactura (16,19,45,'CA');
+EXECUTE registrarFactura (17,20,45,'CO');
+EXECUTE registrarFactura (18,21,45,'CO');
+EXECUTE registrarFactura (19,22,45,'CA');
+EXECUTE registrarFactura (20,23,45,'CO');
+EXECUTE registrarFactura (21,24,45,'CO');
+EXECUTE registrarFactura (22,25,45,'CA'); 
 
 
 --------------------------------------------------
@@ -1677,14 +1616,7 @@ EXECUTE registroReview(75,8,'Me la pase muy bien en Familia, recomendado',5);
 
 set SERVEROUTPUT on;
 
---INVOCACION: REGISTRO DE LA RESERVA DEL CLIENTE
-execute registroReserva(9333,1, 5,'28-nov-21');
-    p_id_cliente         
-    p_id_tour            
-    p_cantidad_personas  
-    p_fecha_inicio       
-    
-    
+
 -----CREACION DE LAS VISTAS----
 
 -- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
