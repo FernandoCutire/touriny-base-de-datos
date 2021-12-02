@@ -158,7 +158,10 @@ CREATE OR REPLACE PROCEDURE registroReview(
 
 IS 
     intSeqVal number;
+    PRAGMA autonomous_transaction;
 BEGIN
+
+IF p_calificacion < 5 then
     select sec_id_review.nextval into intSeqVal from dual;
 INSERT into REVIEWS VALUES (
     intSeqVal,
@@ -169,8 +172,18 @@ INSERT into REVIEWS VALUES (
     sysdate
     );
     COMMIT;
+ELSE
+DBMS_OUTPUT.PUT_LINE('💣 Error: la calificacion es de 0 a 5');
+END IF;
+
 EXCEPTION
    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
 END registroReview;
 /
+
+execute registroReview (9333,2,'bueno',3);
+execute registroReview (9333,2,'bueno',3);
+execute registroReview (9333,2,'bueno',1);
+execute registroReview (9333,2,'bueno',5);
+execute registroReview (9333,2,'bueno',2);

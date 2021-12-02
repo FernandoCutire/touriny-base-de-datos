@@ -1658,6 +1658,7 @@ EXECUTE registrarFactura (22,25,45,'CA');
 
 set SERVEROUTPUT on;
 
+
 -----CREACION DE LAS VISTAS----
 
 -- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
@@ -1754,4 +1755,6 @@ FROM RESERVACION r
     INNER JOIN FACTURACION f ON f.id_reserva = r.id_reserva 
     GROUP BY r.fecha_reserva
     ORDER BY COUNT(f.monto_pago) DESC;
+
+
 

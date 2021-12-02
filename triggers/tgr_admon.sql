@@ -33,6 +33,8 @@
 /*
 Actualización de datos de la tabla de auditoria. 	
 */
+
+
 CREATE OR REPLACE TRIGGER ACTUALIZAR_AUDITORIA
 AFTER INSERT OR UPDATE 
 ON RESERVA_TOURS
@@ -121,3 +123,5 @@ BEGIN
     
 END facturacion;
 /
+
+
