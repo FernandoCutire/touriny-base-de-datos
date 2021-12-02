@@ -24,13 +24,7 @@ EXCEPTION
        DBMS_OUTPUT.PUT_LINE('💣 Error: La promoción ya existe.');
 END registroPromociones;
 /
-EXECUTE registroPromociones(2,11,12,0.35);
-EXECUTE registroPromociones(3, 12, 1, 0.5);
-EXECUTE registroPromociones(3, 6, 7, 0.25);
-EXECUTE registroPromociones(4, 1, 2, 0.20);
 
-alter table PROMOCIONES
-modify DESCIPCION varchar2(250);
 -- -----------------------------------------------------
 -- 2- Proc activacion de las promociones
 -- -----------------------------------------------------
@@ -41,18 +35,14 @@ v_id_promo number;
 v_promo number;
 v_descuento number;
 
-
 BEGIN
-
 select promocion into v_promo from promociones where id_promo = no_promocion;
-
 update Tours
 SET promocion = descuento(v_promo,precio)
 where id_promo = no_promocion;
 
 END activarPromo;
 /
-
 
 create or replace function descuento(descuento number, precio number)
 return number IS
@@ -64,4 +54,3 @@ return v_resultado;
 END descuento;
 /
 
-ROLLBACK;

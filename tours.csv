@@ -1,0 +1,11 @@
+ID_TOURS,TOUR_NOMBRE,DURACION,DESCRIPCION,PRECIO,CANTIDAD_CUPOS,ID_DIFICULTAD,ID_GUIA,STATUS,CALIFICACION,ID_PROMO,PROMOCION,FECHA_MOD
+1,Tour de la ciudad y el Canal de Panamá ,6,Conoce los mejores lugares en la ciudad de Panamá.,67,20,1,1,<NULL>,0,<NULL>,<NULL>,<NULL>
+2,Tour privado centro histórico de Panamá,8,La historia de Panamá en un tour.,100,5,1,2,<NULL>,0,<NULL>,<NULL>,<NULL>
+3,Ven a San Blas ,16,Las maravillas de la isla San Blas.,89,30,2,3,<NULL>,0,<NULL>,<NULL>,<NULL>
+4,Portobelo y destinos del caribe de Panamá,12,Sé parte de la experiencia de Colón y el caribe panameño.,90,15,1,4,<NULL>,0,<NULL>,<NULL>,<NULL>
+5,Ida al Valle de Antón,10,Experimenta el valle de Antón.,120,20,2,5,<NULL>,0,<NULL>,<NULL>,<NULL>
+6,Tour al volcán Barú,72,Un tour al volcán Barú a pie.,150,20,3,1,<NULL>,0,<NULL>,<NULL>,<NULL>
+7,Tour al volcán Barú en 4x4,48,Un tour al volcán Barú.,200,10,2,2,<NULL>,0,<NULL>,<NULL>,<NULL>
+8,Ven a Bocas del Toro,20,Playas, buen clima, restaurantes para disfrutar en Bocas del Toro.,190,20,1,3,<NULL>,0,<NULL>,<NULL>,<NULL>
+9,La isla de las Flores,9,La isla de las Flores tiene mucho que ofrecer a sus clientes.,150,15,2,4,<NULL>,0,<NULL>,<NULL>,<NULL>
+10,El Archipiélago de las Perlas,6,El Archipielago de las Perlas da una gran experiencia para la familia.,80,12,1,5,<NULL>,0,<NULL>,<NULL>,<NULL>

@@ -2,15 +2,15 @@
 1. trigger de secuencia automatica de nueva reservacion
 */
 
-create or replace TRIGGER  "INSERT_RESERVA"
-BEFORE INSERT ON RESERVACION
-FOR EACH ROW
-DECLARE
-  reserva_id number;
-BEGIN
-select sec_id_reserva.nextval into reserva_id from dual;
-  :new.id_reserva := reserva_id;
-END;
+-- create or replace TRIGGER  "INSERT_RESERVA"
+-- BEFORE INSERT ON RESERVACION
+-- FOR EACH ROW
+-- DECLARE
+--   reserva_id number;
+-- BEGIN
+-- select sec_id_reserva.nextval into reserva_id from dual;
+--   :new.id_reserva := reserva_id;
+-- END;
 
 
 /*
@@ -18,17 +18,17 @@ END;
 */
 
 
-CREATE OR REPLACE TRIGGER "INSERT_RESERVA_TOUR"
-BEFORE INSERT 
-ON RESERVA_TOUR
-FOR EACH ROW
-DECLARE
-    reserva_id number;
-BEGIN
-    select id_reserva into reserva_id from reservacion;
-    :new.id_reserva1 := reserva_id;
-END;
-/
+-- CREATE OR REPLACE TRIGGER "INSERT_RESERVA_TOUR"
+-- BEFORE INSERT 
+-- ON RESERVA_TOUR
+-- FOR EACH ROW
+-- DECLARE
+--     reserva_id number;
+-- BEGIN
+--     select id_reserva into reserva_id from reservacion;
+--     :new.id_reserva1 := reserva_id;
+-- END;
+-- /
 
 /*
 Actualización de datos de la tabla de auditoria. 	
@@ -80,23 +80,48 @@ EXCEPTION
 END ACTUALIZAR_AUDITORIA;
 /
 
---AUDITORIA
-CREATE TABLE AUDITORIA (
-  id_auditoria NUMBER NOT NULL,
-  no_reserva NUMBER,
-  id_tour NUMBER,
-  tipo_operacion CHAR(2),
-  tabla varchar2(45),
-  cantidad_personas NUMBER,
-  fecha_inicio DATE,
-  fecha_fin DATE,
-  status Char(2),
-  precio_total NUMBER,
-  usuario VARCHAR2(250),
-  fecha_insercion DATE,
-  CONSTRAINT auditoria_pk PRIMARY KEY (id_auditoria),
-  CONSTRAINT auditoria_RESERVACION_fk FOREIGN KEY (no_reserva)
-      REFERENCES RESERVACION (id_reserva)
-);
 
-DROP TABLE AUDITORIA;
+-------------------------------------------------------------------------
+-- TRIGGER DE ACTUALIZACION DE LA FACTURA EN LA RESERVACION
+------------------------------------------------------------------------
+CREATE OR REPLACE TRIGGER facturacion
+after INSERT
+ON facturacion 
+FOR EACH ROW
+declare
+l_transac number := case
+    when :new.tipo_transac = 'CO' then 1
+    else 2 end; 
+
+BEGIN
+
+    IF l_transac = 1 THEN
+        UPDATE reservacion
+        SET
+        status = 'CO'
+        WHERE
+        id_reserva = :new.id_reserva;
+        
+        UPDATE reserva_tours
+        set
+        status = 'CO'
+        WHERE
+        id_reserva1 = :new.id_reserva;
+       
+    ELSIF l_transac = 2 then
+            UPDATE reservacion
+            SET
+            status = 'CA'
+            WHERE
+            id_reserva = :new.id_reserva;
+            UPDATE reserva_tours
+            set
+            status = 'CA'
+            WHERE
+            id_reserva1 = :new.id_reserva;
+    END IF;
+    
+END facturacion;
+/
+
+

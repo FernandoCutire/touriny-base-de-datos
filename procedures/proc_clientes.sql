@@ -1,5 +1,6 @@
 -- -----------------------------------------------------
 -- 1- Proc Registro del cliente
+-- Primero correr funcion calcularEdad
 -- -----------------------------------------------------
 CREATE OR REPLACE PROCEDURE registroCliente(
     p_dni         IN clientes.dni%TYPE,
@@ -48,6 +49,7 @@ END registroCliente;
 
 -- -----------------------------------------------------
 -- 2- Proc Registro de reserva del cliente
+-- Correr primer calcular horas
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE registroReserva(
@@ -136,7 +138,7 @@ ELSE
 END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: .');
+       DBMS_OUTPUT.PUT_LINE('💣 Error: Advertencia: No se han encontrado datos.');
     WHEN limite_cupos_exeed THEN
         DBMS_OUTPUT.PUT_LINE('💣 Advertencia: Cupos agotados para este tour. Elija una fecha diferente.');
 END registroReserva;
@@ -148,7 +150,7 @@ END registroReserva;
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE registroReview(
-    p_ciente          IN reviews.id_cliente%TYPE,
+    p_cLiente          IN reviews.id_cliente%TYPE,
     p_tour            IN reviews.id_tour%TYPE,
     p_descripcion     IN reviews.descripcion%TYPE,
     p_calificacion    IN reviews.calificacion%TYPE
@@ -163,7 +165,7 @@ IF p_calificacion < 5 then
     select sec_id_review.nextval into intSeqVal from dual;
 INSERT into REVIEWS VALUES (
     intSeqVal,
-    p_ciente,
+    p_cliente,
     p_tour,
     p_descripcion,
     p_calificacion,

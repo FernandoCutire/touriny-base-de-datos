@@ -104,4 +104,3 @@ EXCEPTION
 END registroTour;
 /
 
-execute registroTour('prueba',8,'hola',50,60,1,1,2,5,1,1);

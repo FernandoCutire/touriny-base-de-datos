@@ -31,7 +31,6 @@ END promCalificacion;
 
 
 
-
 /*
 trigger para el promedio de calificaciones
 */
