@@ -36,35 +36,24 @@ CREATE OR REPLACE PROCEDURE registroTour(
     p_cupos           IN tours.cantidad_cupos%TYPE,
     p_dificultad      IN tours.id_dificultad%TYPE,
     p_guia            IN tours.id_guia%TYPE,
-    p_id_promo        IN tours.id_promo%TYPE,
-    p_destino1        number,
-    p_destino2        number,
-    p_destino3        number)
+    destinos_ids  touriny.destinos_t_pkg.destinos_del_tour)
 
 IS 
     
     v_precio number := p_precio;
     v_status char(2) := 'A';
     v_calificacion number := 0;
-    v_promocion number;
     intSeqVal number;
-
-    v_dest1 number := p_destino1;
-    v_dest2 number := p_destino2;
-    v_dest3 number := p_destino3;
-    --array asociativo para guardar los destinos que tendra el tour.
-    TYPE destinos IS TABLE OF NUMBER INDEX BY VARCHAR2(15);
-    destino_id destinos;
-    Idx VARCHAR2(15);
 
 BEGIN
     --inicializacion de la secuencia.
     select sec_id_tour.nextval into intSeqVal from dual;
 
-    --extraccion del valor de la promocion en promociones.
-    select promocion into v_promocion from promociones where id_promo = p_id_promo;
     
-INSERT into TOURS VALUES (
+INSERT into TOURS (
+    id_tours,tour_nombre,duracion,descripcion,precio,cantidad_cupos,id_dificultad,id_guia,status,CALIFICACION,promocion,fecha_mod
+)
+VALUES (
     intSeqVal,
     p_nombre,
     p_duracion,
@@ -75,32 +64,30 @@ INSERT into TOURS VALUES (
     p_guia,
     v_status,
     v_calificacion,
-    p_id_promo,
-    v_promocion,
+    p_precio,
     sysdate
     );
 
-    --asignacion de los valores de los destinos para el tour.
-    destino_id('destino1') := v_dest1;
-    destino_id('destino2') := v_dest2;
-    destino_id('destino3') := v_dest3;
-
-    --asignacion del primer valor del array.
-    idx := destino_id.first;
-
-    --loop en el array para insertar el id del tour y el destino en la relacion muchos a muchos.
-    WHILE Idx IS NOT NULL LOOP
-        INSERT INTO DESTINOS_TOURS VALUES(
-            destino_id(idx),
-            intSeqVal,
-            sysdate
-        );
-        Idx := destino_id.NEXT(Idx);
+    -- se recorren los valores contenidos en el array con los ids de los destinos para el tour.
+    FOR i IN destinos_ids.first..destinos_ids.last LOOP
+    INSERT INTO DESTINOS_TOURS VALUES(
+                destinos_ids(i),
+                intSeqVal,
+                sysdate
+            );
     END LOOP;
-
+  
 EXCEPTION
-   WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: El tour ya existe.');
+    WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: El tour ya existe.');
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: validar que los datos ingresados sean correctos.');
 END registroTour;
 /
+
+CREATE OR REPLACE PACKAGE touriny.destinos_t_pkg IS
+   TYPE destinos_del_tour IS TABLE OF number INDEX BY BINARY_INTEGER;
+END destinos_t_pkg;
+/
+
 
