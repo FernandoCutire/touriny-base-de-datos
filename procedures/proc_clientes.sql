@@ -69,6 +69,7 @@ IS
     limite_cupos_exeed EXCEPTION;
     v_dias number;
     v_horas number;
+    v_precio_total number;
     PRAGMA exception_init(limite_cupos_exeed, -20111);
 BEGIN
 
@@ -94,19 +95,19 @@ IF p_cantidad_personas <= 10 AND p_fecha_inicio > sysdate THEN
     ELSE
     --antes de la insercion se valida con el trigger ValidarCupos
     select sec_id_reserva.nextval into intseqval from dual;
-    INSERT INTO RESERVACION(
-        id_reserva,
-        id_cliente,
-        fecha_reserva,
-        status)
+    --extrae el precio del tour seleccionado;
+    select promocion into v_precio from tours where id_tours = p_id_tour;
+    v_precio_total := v_precio * p_cantidad_personas;
+    INSERT INTO RESERVACION
         VALUES (
-            intseqval,
+        intseqval,
         p_id_cliente,
         sysdate,
-        v_status);
+        p_cantidad_personas,
+        v_status,
+        v_precio_total);
 
-    --extrae el precio del tour seleccionado;
-    select precio into v_precio from tours where id_tours = p_id_tour;
+    
     --extrae la duracion del tour selecionado.
     select duracion into v_horas from tours where id_tours = p_id_tour;
     --conversion de las horas de duracion a -> dias.
@@ -158,10 +159,9 @@ CREATE OR REPLACE PROCEDURE registroReview(
 
 IS 
     intSeqVal number;
-    PRAGMA autonomous_transaction;
 BEGIN
 
-IF p_calificacion < 5 then
+IF p_calificacion <= 5 then
     select sec_id_review.nextval into intSeqVal from dual;
 INSERT into REVIEWS VALUES (
     intSeqVal,
@@ -173,12 +173,14 @@ INSERT into REVIEWS VALUES (
     );
     COMMIT;
 ELSE
-DBMS_OUTPUT.PUT_LINE('💣 Error: la calificacion es de 0 a 5');
+DBMS_OUTPUT.PUT_LINE('💣 Error: la calificacion es de 1 a 5');
 END IF;
 
 EXCEPTION
-   WHEN DUP_VAL_ON_INDEX THEN
+    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
+    WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: Los datos ingresados son incorrectos.');
 END registroReview;
 /
 

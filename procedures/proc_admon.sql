@@ -47,7 +47,6 @@ END registroGuia;
 
 create or replace procedure registrarFactura(
     l_no_reserva      in facturacion.id_reserva%TYPE,
-    l_id_cliente      in facturacion.id_cliente%TYPE,
     l_monto           in facturacion.monto_pago%TYPE,
     l_tipo_transac    in facturacion.tipo_transac%TYPE
 )
@@ -56,7 +55,7 @@ v_secuencia number;
 v_monto number;
 BEGIN
 select precio_total into v_monto from reservacion
-    where id_reserva = l_no_reserva and id_cliente = l_id_cliente;
+    where id_reserva = l_no_reserva;
 
 IF SQL%NOTFOUND THEN
     DBMS_OUTPUT.PUT_LINE('Error de registro: Los valores ingresados no son validos.');
@@ -67,7 +66,6 @@ select sec_no_factura.nextval into v_secuencia from dual;
 INSERT INTO facturacion VALUES(
         v_secuencia,
         l_no_reserva,
-        l_id_cliente,
         l_monto,
         l_tipo_transac,
         sysdate
