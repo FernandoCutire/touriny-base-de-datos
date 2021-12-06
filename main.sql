@@ -1,3 +1,23 @@
+-- ╱╭╮
+-- ╭╯╰╮
+-- ╰╮╭╋━━┳╮╭┳━┳┳━╮╭╮╱╭╮
+-- ╱┃┃┃╭╮┃┃┃┃╭╋┫╭╮┫┃╱┃┃
+-- ╱┃╰┫╰╯┃╰╯┃┃┃┃┃┃┃╰━╯┃
+-- ╱╰━┻━━┻━━┻╯╰┻╯╰┻━╮╭╯
+-- ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃
+-- ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╰━━╯
+
+-- Consideraciones importantes:
+--   1)- Crear un nuevo usuario para la base de datos con el nombre "touriny"
+--   2)- Conceder permisos para crear: CREATE VIEWS, CREATE ANY PROCEDURE, CONNECT, RESOURCE. Ver carpteta--> /utils
+
+--PAQUETE CREADO PARA ALMACENAR TIPO DE DATOS ARRAY USADO PARA EL PROCESO DE CREACION DE TOURS.
+CREATE OR REPLACE PACKAGE touriny.destinos_t_pkg IS
+   TYPE destinos_del_tour IS TABLE OF number INDEX BY BINARY_INTEGER;
+END destinos_t_pkg;
+/
+
+set SERVEROUTPUT on;
 -- -----------------------------------------------------
 -- Table pais
 -- -----------------------------------------------------
@@ -439,9 +459,9 @@ INSERT INTO PAIS VALUES (237, 'Zaire ');
 INSERT INTO PAIS VALUES (238, 'Zimbabue ');
 
 --INSERTAR CLIENTES--
-INSERT INTO CLIENTES VALUES(8977, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'ANTONIO', 'JUAN8977@MAIL.COM', '(337) 308-5133', 59, 198);
-INSERT INTO CLIENTES VALUES(9010, '800-99-124', 'KREVITH', 'BEITIA', 'SHAW', 'HOLBERT', 'KREVITH9010@MAIL.COM', '(554) 887-4705', 57, 164);
-INSERT INTO CLIENTES VALUES(10057, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
+INSERT INTO CLIENTES VALUES(1, '800-99-123', 'JUAN', 'MARTINEZ', 'ZELAYA', 'ANTONIO', 'JUAN8977@MAIL.COM', '(337) 308-5133', 59, 198);
+INSERT INTO CLIENTES VALUES(2, '800-99-124', 'KREVITH', 'BEITIA', 'SHAW', 'HOLBERT', 'KREVITH9010@MAIL.COM', '(554) 887-4705', 57, 164);
+INSERT INTO CLIENTES VALUES(3, '800-99-125', 'BORIS', 'MENDOZA', 'FLORES', 'NELSON', 'BORIS9067@MAIL.COM', '(761) 503-5101', 22, 164);
 
 --INSERTAR GUIA--
 INSERT INTO GUIAS VALUES (1, '8-456-875', 'Fernando', 'Diaz', 'fernando.diaz@outlook.com', '68707239', 20, 'Ciudad de Panamá');
@@ -455,17 +475,7 @@ INSERT INTO dificultad VALUES (3, 'Dificil');
 -- INSERTAR TOURS
 INSERT INTO TOURS VALUES (1, 'Tour de la ciudad y el Canal de Panamá ', 6, 'Conoce los mejores lugares en la ciudad de Panamá.', 67, 20, 1, 1);
 INSERT INTO TOURS VALUES (2, 'Tour privado centro histórico de Panamá', 8, 'La historia de Panamá en un tour.', 100, 5, 1, 2);
--- INSERT INTO TOURS VALUES (3, 'Ven a San Blas ', 16, 'Las maravillas de la isla San Blas.', 89, 30, 2, 3);
 
--- INSERTAR RESERVAS
-INSERT INTO RESERVACION VALUES (1, 8977, TO_DATE('02-01-2019','DD-MM-YYYY'),1);
-INSERT INTO RESERVACION VALUES (2, 9010,TO_DATE('03-01-2019','DD-MM-YYYY'),2);
-INSERT INTO RESERVACION VALUES (3, 10057,TO_DATE('04-01-2019','DD-MM-YYYY'),5);
-
--- INSERTAR RESERVA_TOURS 
-INSERT INTO RESERVA_TOURS VALUES( 1, 2, TO_DATE('04-01-2019','DD-MM-YYYY'), TO_DATE('07-01-2019','DD-MM-YYYY'));
-INSERT INTO RESERVA_TOURS VALUES( 2, 1, TO_DATE('05-01-2019','DD-MM-YYYY'), TO_DATE('05-01-2019','DD-MM-YYYY'));
--- INSERT INTO RESERVA_TOURS VALUES( 2, 6, TO_DATE('07-01-2019','DD-MM-YYYY'), TO_DATE('10-01-2019','DD-MM-YYYY'));
 
 --INSERTAR DESTINO
 INSERT INTO DESTINOS VALUES (1,'Canal de Panamá');
@@ -479,7 +489,15 @@ INSERT INTO DESTINOS_TOURS VALUES (2, 1);
 INSERT INTO DESTINOS_TOURS VALUES (3, 1);
 INSERT INTO DESTINOS_TOURS VALUES (3, 2);
 
+-- INSERTAR RESERVAS
+INSERT INTO RESERVACION VALUES (1, 1, TO_DATE('02-01-2019','DD-MM-YYYY'),1);
+INSERT INTO RESERVACION VALUES (2, 2,TO_DATE('03-01-2019','DD-MM-YYYY'),2);
+INSERT INTO RESERVACION VALUES (3, 3,TO_DATE('04-01-2019','DD-MM-YYYY'),5);
 
+-- INSERTAR RESERVA_TOURS 
+INSERT INTO RESERVA_TOURS VALUES( 1, 2, TO_DATE('04-01-2019','DD-MM-YYYY'), TO_DATE('07-01-2019','DD-MM-YYYY'));
+INSERT INTO RESERVA_TOURS VALUES( 2, 1, TO_DATE('05-01-2019','DD-MM-YYYY'), TO_DATE('05-01-2019','DD-MM-YYYY'));
+INSERT INTO RESERVA_TOURS VALUES( 3, 2, TO_DATE('07-01-2019','DD-MM-YYYY'), TO_DATE('10-01-2019','DD-MM-YYYY'));
 
 
 
@@ -545,15 +563,12 @@ CREATE TABLE PROMOCIONES(
 create table facturacion(
     no_factura number not null,
     id_reserva number not null,
-    id_cliente number not null,
     monto_pago number DEFAULT 0,
     tipo_transac char(2),
     fecha_transac date,
     constraint pk_facturacion PRIMARY KEY (no_factura),
     constraint fk_id_reserva3 FOREIGN KEY (id_reserva)
-        references reservacion (id_reserva),
-    constraint fk_id_cliente3 FOREIGN KEY (id_cliente)
-        references clientes (id_cliente)
+        references reservacion (id_reserva)
 );
 
 -- -----------------------------------------------------
@@ -793,6 +808,7 @@ IS
     limite_cupos_exeed EXCEPTION;
     v_dias number;
     v_horas number;
+    v_precio_total number;
     PRAGMA exception_init(limite_cupos_exeed, -20111);
 BEGIN
 
@@ -812,25 +828,25 @@ IF p_cantidad_personas <= 10 AND p_fecha_inicio > sysdate THEN
     AND fecha_inicio = p_fecha_inicio
     AND status = 'PE';
 
-    --el numero de personas para un dia, no puede exeder el limite de personas del tour.
+    --el numero de perosnas para un dia, no puede exeder el limite de personas del tour.
     IF v_cupos > v_cantidad_max THEN
         raise_application_error(-20111,'Limite de cupos exedido.');
     ELSE
     --antes de la insercion se valida con el trigger ValidarCupos
     select sec_id_reserva.nextval into intseqval from dual;
-    INSERT INTO RESERVACION(
-        id_reserva,
-        id_cliente,
-        fecha_reserva,
-        status)
+    --extrae el precio del tour seleccionado;
+    select promocion into v_precio from tours where id_tours = p_id_tour;
+    v_precio_total := v_precio * p_cantidad_personas;
+    INSERT INTO RESERVACION
         VALUES (
-            intseqval,
+        intseqval,
         p_id_cliente,
         sysdate,
-        v_status);
+        p_cantidad_personas,
+        v_status,
+        v_precio_total);
 
-    --extrae el precio del tour seleccionado;
-    select precio into v_precio from tours where id_tours = p_id_tour;
+    
     --extrae la duracion del tour selecionado.
     select duracion into v_horas from tours where id_tours = p_id_tour;
     --conversion de las horas de duracion a -> dias.
@@ -878,7 +894,7 @@ END registroReserva;
 -- -----------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE registroReview(
-    p_cliente          IN reviews.id_cliente%TYPE,
+    p_cLiente          IN reviews.id_cliente%TYPE,
     p_tour            IN reviews.id_tour%TYPE,
     p_descripcion     IN reviews.descripcion%TYPE,
     p_calificacion    IN reviews.calificacion%TYPE
@@ -886,7 +902,10 @@ CREATE OR REPLACE PROCEDURE registroReview(
 
 IS 
     intSeqVal number;
+    tour number;
 BEGIN
+select id_tours into tour from tours where id_tours = p_tour;
+IF p_calificacion <= 5 then
     select sec_id_review.nextval into intSeqVal from dual;
 INSERT into REVIEWS VALUES (
     intSeqVal,
@@ -897,13 +916,17 @@ INSERT into REVIEWS VALUES (
     sysdate
     );
     COMMIT;
+ELSE
+DBMS_OUTPUT.PUT_LINE('💣 Error: la calificacion es de 1 a 5');
+END IF;
+
 EXCEPTION
-   WHEN DUP_VAL_ON_INDEX THEN
+    WHEN DUP_VAL_ON_INDEX THEN
        DBMS_OUTPUT.PUT_LINE('💣 Error: El cliente ya existe.');
+    WHEN NO_DATA_FOUND THEN
+       DBMS_OUTPUT.PUT_LINE('💣 Error: Los datos ingresados son incorrectos.');
 END registroReview;
 /
-
-
 
 --ADMINISTRACION
 -- -----------------------------------------------------
@@ -953,7 +976,6 @@ END registroGuia;
 -- -----------------------------------------------------
 create or replace procedure registrarFactura(
     l_no_reserva      in facturacion.id_reserva%TYPE,
-    l_id_cliente      in facturacion.id_cliente%TYPE,
     l_monto           in facturacion.monto_pago%TYPE,
     l_tipo_transac    in facturacion.tipo_transac%TYPE
 )
@@ -962,7 +984,7 @@ v_secuencia number;
 v_monto number;
 BEGIN
 select precio_total into v_monto from reservacion
-    where id_reserva = l_no_reserva and id_cliente = l_id_cliente;
+    where id_reserva = l_no_reserva;
 
 IF SQL%NOTFOUND THEN
     DBMS_OUTPUT.PUT_LINE('Error de registro: Los valores ingresados no son validos.');
@@ -973,7 +995,6 @@ select sec_no_factura.nextval into v_secuencia from dual;
 INSERT INTO facturacion VALUES(
         v_secuencia,
         l_no_reserva,
-        l_id_cliente,
         l_monto,
         l_tipo_transac,
         sysdate
@@ -1029,35 +1050,24 @@ CREATE OR REPLACE PROCEDURE registroTour(
     p_cupos           IN tours.cantidad_cupos%TYPE,
     p_dificultad      IN tours.id_dificultad%TYPE,
     p_guia            IN tours.id_guia%TYPE,
-    p_id_promo        IN tours.id_promo%TYPE,
-    p_destino1        number,
-    p_destino2        number,
-    p_destino3        number)
+    destinos_ids  touriny.destinos_t_pkg.destinos_del_tour)
 
 IS 
     
     v_precio number := p_precio;
     v_status char(2) := 'A';
     v_calificacion number := 0;
-    v_promocion number;
     intSeqVal number;
-
-    v_dest1 number := p_destino1;
-    v_dest2 number := p_destino2;
-    v_dest3 number := p_destino3;
-    --array asociativo para guardar los destinos que tendra el tour.
-    TYPE destinos IS TABLE OF NUMBER INDEX BY VARCHAR2(15);
-    destino_id destinos;
-    Idx VARCHAR2(15);
 
 BEGIN
     --inicializacion de la secuencia.
     select sec_id_tour.nextval into intSeqVal from dual;
 
-    --extraccion del valor de la promocion en promociones.
-    select promocion into v_promocion from promociones where id_promo = p_id_promo;
     
-INSERT into TOURS VALUES (
+INSERT into TOURS (
+    id_tours,tour_nombre,duracion,descripcion,precio,cantidad_cupos,id_dificultad,id_guia,status,CALIFICACION,promocion,fecha_mod
+)
+VALUES (
     intSeqVal,
     p_nombre,
     p_duracion,
@@ -1068,32 +1078,24 @@ INSERT into TOURS VALUES (
     p_guia,
     v_status,
     v_calificacion,
-    p_id_promo,
-    v_promocion,
+    p_precio,
     sysdate
     );
 
-    --asignacion de los valores de los destinos para el tour.
-    destino_id('destino1') := v_dest1;
-    destino_id('destino2') := v_dest2;
-    destino_id('destino3') := v_dest3;
-
-    --asignacion del primer valor del array.
-    idx := destino_id.first;
-
-    --loop en el array para insertar el id del tour y el destino en la relacion muchos a muchos.
-    WHILE Idx IS NOT NULL LOOP
-        INSERT INTO DESTINOS_TOURS VALUES(
-            destino_id(idx),
-            intSeqVal,
-            sysdate
-        );
-        Idx := destino_id.NEXT(Idx);
+    -- se recorren los valores contenidos en el array con los ids de los destinos para el tour.
+    FOR i IN destinos_ids.first..destinos_ids.last LOOP
+    INSERT INTO DESTINOS_TOURS VALUES(
+                destinos_ids(i),
+                intSeqVal,
+                sysdate
+            );
     END LOOP;
-
+  
 EXCEPTION
-   WHEN DUP_VAL_ON_INDEX THEN
-       DBMS_OUTPUT.PUT_LINE('💣 Error: El tour ya existe.');
+    WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: El tour ya existe.');
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('💣 Error: validar que los datos ingresados sean correctos.');
 END registroTour;
 /
 
@@ -1131,19 +1133,68 @@ END registroPromociones;
 -- 2- Proc activacion de las promociones
 -- -----------------------------------------------------
 
-create or replace procedure activarPromo(no_promocion number)
+create or replace procedure activarDesactivartPromo(
+    no_tour IN tours.id_tours%TYPE, 
+    no_promocion IN promociones.id_promo%type,
+    ActivarDesactivar number )
 IS
 v_id_promo number;
 v_promo number;
-v_descuento number;
-BEGIN
-select promocion into v_promo from promociones where id_promo = no_promocion;
-update Tours
-SET promocion = descuento(v_promo,precio)
-where id_promo = no_promocion;
-END activarPromo;
-/
+v_nombre_promo VARCHAR2(100);
+v_nombre_tour VARCHAR2(100);
 
+cursor c_promo is 
+select
+    id_promo,
+    descripcion,
+    promocion
+from promociones
+WHERE id_promo = no_promocion;
+
+BEGIN
+select tour_nombre into v_nombre_tour from tours where id_tours = no_tour;
+
+open c_promo;
+    LOOP
+    FETCH c_promo INTO
+    v_id_promo,
+    v_nombre_promo,
+    v_promo;
+    EXIT WHEN c_promo%NOTFOUND;
+
+
+
+
+--para activar promocion = 1, para desactivar =2
+IF no_promocion is NOT NULL AND ActivarDesactivar = 1 THEN
+update Tours
+SET id_promo = v_id_promo,
+    promocion = descuento(v_promo,precio) 
+where id_tours = no_tour;
+
+
+DBMS_OUTPUT.PUT_LINE('Se ha activado la promocion de: ' || v_nombre_promo
+    || ' en el tour: ' || v_nombre_tour);
+
+
+ELSIF no_promocion is NOT NULL and ActivarDesactivar = 2 THEN
+update Tours
+SET id_promo = 5,
+    promocion = precio
+where id_tours = no_tour;
+
+DBMS_OUTPUT.PUT_LINE('Se ha desactivado las promociones en el tour: ' || v_nombre_tour);
+END IF;
+
+    END LOOP;
+close c_promo;
+
+EXCEPTION 
+    WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Por favor verificar que los valores ingresados sean correctos.');
+
+END activarDesactivartPromo;
+/
 
 
 
@@ -1243,6 +1294,103 @@ EXCEPTION
 END ACTUALIZAR_AUDITORIA;
 /
 
+-----------------------------------------------------------------------
+-----CREACION DE LAS VISTAS----
+---------------------------------------------------------------------------------
+-- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
+
+ CREATE VIEW VISTA_1_CUATRIMESTRE 
+ AS SELECT TO_CHAR(fecha_reserva, 'Q') as "Cuatrimestre", COUNT(fecha_reserva) as "Cantidad" FROM reservacion
+GROUP BY TO_CHAR(fecha_reserva, 'Q') 
+ORDER BY TO_CHAR(fecha_reserva, 'Q');
+
+
+-- 2 Conocer los dias más habituales de reserva. 
+
+ CREATE VIEW VISTA_2_DIAS_HABITUALES 
+AS SELECT TO_CHAR(fecha_reserva, 'DAY') AS "Dia de la semana" , COUNT(fecha_reserva) AS "Cantidad" FROM reservacion
+GROUP BY TO_CHAR(fecha_reserva, 'DAY') 
+ORDER BY COUNT(fecha_reserva) DESC;
+
+
+-- 3 Identificar al consumidor a partir de la nacionalidad. 
+
+ CREATE VIEW VISTA_3_NACIONALIDADES
+AS SELECT p.pais_nombre AS "País", COUNT(c.id_cliente) AS "Cantidad de clientes"
+    FROM PAIS p
+    INNER JOIN CLIENTES c ON c.cod_pais = p.id_pais
+    GROUP BY P.pais_nombre
+    ORDER BY "Cantidad de clientes" DESC;
+
+
+-- 4 Crear paquetes a partir de la cantidad de personas que suelen reservar en grupo.​
+
+ CREATE VIEW VISTA_4_PAQUETES
+AS SELECT
+    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 0 AND 1 THEN 1 ELSE 0 END) AS "Paquete Individual",
+    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 2 AND 2 THEN 1 ELSE 0 END) AS "Paquete Duo",
+    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 3 AND 3 THEN 1 ELSE 0 END) AS "Paquete Triple",
+    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 4 AND 10 THEN 1 ELSE 0 END) AS "Paquete Familiar"
+ FROM RESERVA_TOURS;
+
+
+-- 5 Establecer los tours ofrecidos más frecuentados.​
+
+ CREATE VIEW VISTA_5_TOURS_FAVORITOS
+AS SELECT  t.tour_nombre AS "Nombre del tour" , COUNT(b.ID_TOUR1) AS "Cantidad de reservas"
+FROM tours t
+INNER JOIN reserva_tours b 
+ON b.ID_TOUR1 = t.id_tours
+GROUP BY t.tour_nombre
+ORDER BY COUNT(b.ID_TOUR1) DESC;
+
+
+-- 6 Determinar el rango de edades más frecuentes de los clientes. 
+
+ CREATE VIEW VISTA_6_EDADES
+AS SELECT
+    SUM(CASE WHEN edad BETWEEN 18 AND 24 THEN 1 ELSE 0 END) AS "18-24 Años",
+    SUM(CASE WHEN edad BETWEEN 25 AND 54 THEN 1 ELSE 0 END) AS "25-54 Años",
+    SUM(CASE WHEN edad BETWEEN 55 AND 63 THEN 1 ELSE 0 END) AS "55-63 Años",
+    SUM(CASE WHEN edad BETWEEN 64 AND 105 THEN 1 ELSE 0 END) AS "64+ Años"
+ FROM clientes;
+
+-- 7 Comparar la cantidad de tours de cada guía turístico
+
+CREATE VIEW VISTA_7_GUIAS_TURISTICOS AS SELECT (g.nombre1||' '||g.apellido1) as GUIA, COUNT(t.id_guia) "Tours"
+FROM Guias g
+    INNER JOIN TOURS t ON g.id_guia = t.id_guia
+    GROUP BY g.nombre1, g.apellido1
+    ORDER BY COUNT(t.id_guia) DESC;
+
+
+    -- 8 Vista de Calificacion de Tours
+
+CREATE VIEW VISTA_8_CALIFICACION_TOUR AS SELECT (t.tour_nombre) as "Nombre Tour", AVG(r.calificacion) "Calificación", COUNT(r.id_tour) AS "Cantidad de Reviews"
+FROM TOURS t
+    INNER JOIN REVIEWS r ON r.id_tour = t.id_tours 
+    GROUP BY t.tour_nombre
+    ORDER BY AVG(r.calificacion) DESC;
+
+
+
+-- 9 PROMOCIONES DEL TOUR
+
+CREATE VIEW VISTA_9_PROMOCIONES 
+AS SELECT p.descripcion AS "Promociones del tour", COUNT(t.id_promo) AS "Cantidad de tour"
+FROM promociones p
+INNER JOIN tours t
+ON p.id_promo = t.id_promo
+GROUP BY p.descripcion
+ORDER BY COUNT(t.ID_PROMO) DESC;
+
+--10 MONTO DE FACTURACIÓN
+
+-- CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT to_char(r.fecha_IN,'mm') as "FECHA", SUM(f.monto_pago) "MONTO"
+-- FROM RESERVACION r
+--     INNER JOIN FACTURACION f ON f.id_reserva = r.id_reserva 
+--     GROUP BY r.fecha_reserva
+--     ORDER BY sum(f.monto_pago) desc;
 
 
 -------------------------------------------------------------------
@@ -1254,6 +1402,8 @@ EXECUTE registroPromociones('Black Friday',11,12,0.35);
 EXECUTE registroPromociones('Navidad', 12, 1, 0.5);
 EXECUTE registroPromociones('Aniversario', 6, 7, 0.25);
 EXECUTE registroPromociones('Rebajas de enero', 1, 2, 0.20);
+EXECUTE registroPromociones('Ninguna', 0, 0, 0);
+EXECUTE registroPromociones('50% de descuento', 0, 0, 0.50);
 
 
 -----UPDATE PARA LOS DATOS ANTERIORES---
@@ -1264,7 +1414,7 @@ UPDATE CLIENTES SET
   ciudad = 'Panamá',
   direccion = 'Punta Pacífica',
   fecha_ingreso = SYSDATE
-where id_cliente = 8977;
+where id_cliente = 1;
 
 UPDATE CLIENTES SET 
   fecha_nacimiento = '13-FEB-1965',
@@ -1272,7 +1422,7 @@ UPDATE CLIENTES SET
   ciudad = 'Panamá',
   direccion = 'Obarrio',
   fecha_ingreso = SYSDATE
-where id_cliente = 9010;
+where id_cliente = 2;
   
 
 -- Clientes 3
@@ -1282,7 +1432,7 @@ UPDATE CLIENTES SET
   ciudad = 'Panamá',
   direccion = 'Costa Sur',
   fecha_ingreso = SYSDATE
-where id_cliente = 9067;
+where id_cliente = 3;
 
 -- Funciona registro cliente, cambiar orden de parámetros
 EXECUTE registroCliente('800-99-126', 'SERGIO', 'GARCIA', 'ROJAS', 'ALBERTO', 'SERGIO9173@MAIL.COM', '(760) 858-4101','16-JAN-1995','M',164,'Panamá','La Locería calle 5');
@@ -1405,7 +1555,7 @@ EXECUTE registroGuia ('2-589-156', 'Jack', 'Salazar', 'jack.salazar@outlook.com'
 EXECUTE registroGuia ('N-58-789', 'Thiago', 'Cutire', 'thiago.cutire@outlook.com', '68907239','Panamá', 'Ciudad de Panamá','M', '23-OCT-1996');
 EXECUTE registroGuia ('8-58-789', 'Jasmine', 'Cutire', 'jasmine.cutire@outlook.com', '68907239','Panamá', 'Ciudad de Panamá','F', '12-DEC-1996');
 
--- EXECUTE registroGuia ('6-789-589', 'Jasmine', 'Cutire', 'jasmine.cutire@outlook.com', '68507239', 'Panamá', 'Ciudad de Panamá','F', '12-DEC-2000');
+
 
 -- UPDATES
 UPDATE DESTINOS SET 
@@ -1448,29 +1598,196 @@ EXECUTE registroDestino('Ninguno', '-');
 --- INVOCACION PROCEDIMIENTO REGISTRO DE TOURS
 --------------------------------------------------------------------------------------------
 UPDATE TOURS SET
-  id_promo = 1,
   calificacion = 0,
-  status = 'A'
+  status = 'A',
+  promocion = precio,
+  fecha_mod = sysdate
   where id_tours = 1; 
 
   UPDATE TOURS SET
-  id_promo = 1,
   calificacion = 0,
-  status = 'A'
+  status = 'A',
+  promocion = precio,
+  fecha_mod = sysdate
   where id_tours = 2; 
 
-EXECUTE registroTour('Portobelo y destinos del caribe de Panamá',12,'Sé parte de la experiencia de Colón y el caribe panameño.',90,15,1,4,3,5,7,17);
-EXECUTE registroTour('Ida al Valle de Antón',10,'Experimenta el valle de Antón.',120,20,2,5,3,8,17,17);
-EXECUTE registroTour('Tour al volcán Barú',72,'Experimenta el volcan Barú.',150,20,3,1,4,10,17,17);
-EXECUTE registroTour('Tour al volcán Barú en 4x4', 48, 'Un tour al volcán Barú.', 200, 10, 2, 2, 3, 4, 17, 17);
-EXECUTE registroTour('Ven a Bocas del Toro', 20, 'Playas, buen clima, restaurantes para disfrutar en Bocas del Toro.', 190, 20, 1, 3, 4, 5, 17, 17);
-EXECUTE registroTour('La isla de las Flores', 9, 'La isla de las Flores tiene mucho que ofrecer a sus clientes.', 150, 15, 2, 4, 4, 8,9,17  );
-EXECUTE registroTour('El Archipiélago de las Perlas', 6, 'El Archipielago de las Perlas da una gran experiencia para la familia.', 80, 12, 3, 2, 4, 6, 7, 17);
+--tour 3
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'Ven a san blas ';
+  p_duracion_horas number := 16;
+  p_descripcion VARCHAR2(250) := 'Las maravillas de la isla san blas';
+  p_precio_del_tour number := 89;
+  p_cantidad_personas number := 30;
+  p_dificultad number := 2;
+  p_id_del_guia number := 3;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 6;
 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+ --tour 4
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'Portobelo y destinos del caribe de Panamá';
+  p_duracion_horas number := 12;
+  p_descripcion VARCHAR2(250) := 'Sé parte de la experiencia de Colón y el caribe panameño.';
+  p_precio_del_tour number := 90;
+  p_cantidad_personas number := 15;
+  p_dificultad number := 1;
+  p_id_del_guia number := 4;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 5;
+  destinos_array(1) := 7;
+
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+--tour 5
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'Ida al Valle de Antón';
+  p_duracion_horas number := 10;
+  p_descripcion VARCHAR2(250) := 'Experimenta el valle de Antón.';
+  p_precio_del_tour number := 120;
+  p_cantidad_personas number := 20;
+  p_dificultad number := 2;
+  p_id_del_guia number := 5;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 8;
+ 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+--tour 6
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'Tour al volcán Barú';
+  p_duracion_horas number := 72;
+  p_descripcion VARCHAR2(250) := 'Experimenta el volcan Barú.';
+  p_precio_del_tour number := 150;
+  p_cantidad_personas number := 20;
+  p_dificultad number := 3;
+  p_id_del_guia number := 1;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 10;
+ 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+--tour 7
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'Tour al volcán Barú en 4x4';
+  p_duracion_horas number := 48;
+  p_descripcion VARCHAR2(250) := 'Un tour al volcán Barú.';
+  p_precio_del_tour number := 200;
+  p_cantidad_personas number := 10;
+  p_dificultad number := 2;
+  p_id_del_guia number := 2;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 10;
+ 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+--tour 8
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'Ven a Bocas del Toro';
+  p_duracion_horas number := 20;
+  p_descripcion VARCHAR2(250) := 'Playas, buen clima, restaurantes para disfrutar en Bocas del Toro.';
+  p_precio_del_tour number := 190;
+  p_cantidad_personas number := 20;
+  p_dificultad number := 1;
+  p_id_del_guia number := 3;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 16;
+ 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+--tour 9
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'La isla de las Flores';
+  p_duracion_horas number := 9;
+  p_descripcion VARCHAR2(250) := 'La isla de las Flores tiene mucho que ofrecer a sus clientes.';
+  p_precio_del_tour number := 150;
+  p_cantidad_personas number := 15;
+  p_dificultad number := 2;
+  p_id_del_guia number := 4;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 7;
+ 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+/*
+DECLARE
+  --se declara un arrego variable donde se asignan los destinos que contendra el tour.
+  destinos_array touriny.destinos_t_pkg.destinos_del_tour;
+  p_nombre_del_tour VARCHAR2(45) := 'El Archipiélago de las Perlas';
+  p_duracion_horas number := 6;
+  p_descripcion VARCHAR2(250) := 'El Archipielago de las Perlas da una gran experiencia para la familia.';
+  p_precio_del_tour number := 80;
+  p_cantidad_personas number := 12;
+  p_dificultad number := 2;
+  p_id_del_guia number := 2;
+BEGIN
+  --asignacion de los codigos de cada destino para el tour. Importante, !NO se puede repetir el destino!.
+  destinos_array(0) := 11;
+ 
+  registroTour(p_nombre_del_tour,p_duracion_horas,p_descripcion,p_precio_del_tour,p_cantidad_personas,p_dificultad,p_id_del_guia,destinos_array);
+END;
+ /
+
+ */
+
+-----------------------------------------------------------------------------------------------
+-- INVOCACION AL REGISTRO DE LAS REVIEWS
+-----------------------------------------------------------------------------------------------
+EXECUTE registroReview(4,3,'Me pareció muy bueno',4);
+EXECUTE registroReview(23,5,'Muy Bonito',5);
+EXECUTE registroReview(10,4,'Una buena experiencia, con lindas vistas',4);
+EXECUTE registroReview(31,1,'Excelente servicio',4);
+EXECUTE registroReview(43,9,'Que hermosas islas!!!',5);
+EXECUTE registroReview(45,3,'El tiempo no estuvo bueno, pero hermoso el volcan',3);
+EXECUTE registroReview(76,8,'Hermoso el tour',4);
+EXECUTE registroReview(54,4,'Mucho Frio!!',3);
+EXECUTE registroReview(6,7,'Chulada de Lugar, excelente trato',4);
+EXECUTE registroReview(42,2,'Full recomendado a todos mis conocidos',4);
+EXECUTE registroReview(35,2,'Volvere!!!',5);
+EXECUTE registroReview(93,6,'Waooo, muy divertido todo, mi familia quiere volver a recorrer en 4x4 el volcá',3);
+EXECUTE registroReview(84,5,'Mi primera vez en el volcan, no me arrepiento',4);
+EXECUTE registroReview(81,7,'Un viaje algo largo',3);
+EXECUTE registroReview(75,9,'Me la pase muy bien en Familia, recomendado',5);
 
 
 --------------------------------------------------------------------------------------------
---- INVOCACION PROCEDIMIENTO REGISTRO DE TOURS
+--- INVOCACION PROCEDIMIENTO REGISTRO DE RESERVAS
 --------------------------------------------------------------------------------------------
  --PARAMETROS: p_id_cliente, p_id_tour, p_cantidad_personas, p_fecha_inicio
 
@@ -1506,6 +1823,7 @@ EXECUTE registroReserva(23,5,1,TO_DATE('12-04-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(24,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
 --breackpoint
 EXECUTE registroReserva(25,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
+EXECUTE registroReserva(26,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
 
 /*----IMPORTANTE (0.0)
                        __
@@ -1522,8 +1840,8 @@ EXECUTE registroReserva(25,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
     `-'                   '--------------------------'
 --PASAR A --> EXECUTE REGRISTRAR FACTURA PARA LIBERAR LOS CUPOS 
 --PARA GENERAR NUEVAS RESERVAS..*/
-/*
-EXECUTE registroReserva(26,7, 1,TO_DATE('24-04-2022','DD-MM-YYYY'));
+
+EXECUTE registroReserva(26,5,5,TO_DATE('10-02-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(27,9,4,TO_DATE('27-04-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(28,1,1,TO_DATE('27-04-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(29,2, 2,TO_DATE('30-04-2022','DD-MM-YYYY'));
@@ -1595,166 +1913,77 @@ EXECUTE registroReserva(94, 3,1,TO_DATE('25-11-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(95, 4,2,TO_DATE('25-11-2022','DD-MM-YYYY'));
 EXECUTE registroReserva(96, 4,2,TO_DATE('20-12-2022','DD-MM-YYYY'));
 
-*/
-
-
-
------------------------------------------------------------------------------------------------
--- INVOCACION A LA ACTIVACION DE PROMOCIONES
------------------------------------------------------------------------------------------------
-
-EXECUTE activarPromo(1);
-EXECUTE activarPromo(2);
-
------------------------------------------------------------------------------------------------
--- INVOCACION AL REGISTRO DE LAS REVIEWS
------------------------------------------------------------------------------------------------
-EXECUTE registroReview(4,3,'Me pareció muy bueno',4);
-EXECUTE registroReview(23,5,'Muy Bonito',5);
-EXECUTE registroReview(10,4,'Una buena experiencia, con lindas vistas',4);
-EXECUTE registroReview(31,1,'Excelente servicio',4);
-EXECUTE registroReview(43,9 ,'Que hermosas islas!!!',5);
-EXECUTE registroReview(45,3,'El tiempo no estuvo bueno, pero hermoso el volcan',3);
-EXECUTE registroReview(76,8,'Hermoso el tour',4);
-EXECUTE registroReview(54,4,'Mucho Frio!!',3);
-EXECUTE registroReview(6,7,'Chulada de Lugar, excelente trato',4);
-EXECUTE registroReview(42,2,'Full recomendado a todos mis conocidos',4);
-EXECUTE registroReview(35,2,'Volvere!!!',5);
-EXECUTE registroReview(93,6,'Waooo, muy divertido todo, mi familia quiere volver a recorrer en 4x4 el volcá',3);
-EXECUTE registroReview(84,5,'Mi primera vez en el volcan, no me arrepiento',4);
-EXECUTE registroReview(81,7,'Un viaje algo largo',3);
-EXECUTE registroReview(75,8,'Me la pase muy bien en Familia, recomendado',5);
-
 
 
 -----------------------------------------------------------------------------------------------
 -- INVOCACION AL REGISTRAR FACTURA
 -----------------------------------------------------------------------------------------------
-EXECUTE registrarFactura (4,5,29,'CO');
-EXECUTE registrarFactura (5,6,29,'CO');
-EXECUTE registrarFactura (6,7,29,'CO');
-EXECUTE registrarFactura (7,8,29,'CA');
-EXECUTE registrarFactura (8,9,29,'CO');
-EXECUTE registrarFactura (9,10,2,'CO');
-EXECUTE registrarFactura (10,11,45,'CO');
-EXECUTE registrarFactura (11,12,45,'CO');
-EXECUTE registrarFactura (12,15,45,'CO');
-EXECUTE registrarFactura (13,16,45,'CA');
-EXECUTE registrarFactura (14,17,45,'CO');
-EXECUTE registrarFactura (15,18,45,'CO');
-EXECUTE registrarFactura (16,19,45,'CA');
-EXECUTE registrarFactura (17,20,45,'CO');
-EXECUTE registrarFactura (18,21,45,'CO');
-EXECUTE registrarFactura (19,22,45,'CA');
-EXECUTE registrarFactura (20,23,45,'CO');
-EXECUTE registrarFactura (21,24,45,'CA');
-EXECUTE registrarFactura (22,25,45,'CA'); 
+EXECUTE registrarFactura (4,29,'CO');
+EXECUTE registrarFactura (5,29,'CO');
+EXECUTE registrarFactura (6,29,'CO');
+EXECUTE registrarFactura (7,0,'CA');
+EXECUTE registrarFactura (8,29,'CO');
+EXECUTE registrarFactura (9,80,'CO');
+EXECUTE registrarFactura (10,45,'CO');
+EXECUTE registrarFactura (11,45,'CO');
+EXECUTE registrarFactura (12,45,'CO');
+EXECUTE registrarFactura (13,0,'CA');
+EXECUTE registrarFactura (14,45,'CO');
+EXECUTE registrarFactura (15,45,'CO');
+EXECUTE registrarFactura (16,0,'CA');
+EXECUTE registrarFactura (17,45,'CO');
+EXECUTE registrarFactura (18,45,'CO');
+EXECUTE registrarFactura (19,45,'CA');
+EXECUTE registrarFactura (20,45,'CO');
+EXECUTE registrarFactura (21,0,'CA');
+EXECUTE registrarFactura (22,0,'CA');
+EXECUTE registrarFactura(23,100,'CO');
+EXECUTE registrarFactura(24,100,'CO');
+EXECUTE registrarFactura(25,100,'CO');
 
 
---------------------------------------------------
----La nueva implementacion de los procesos
--- TODO NO CORRER TODAVIA DE AQUI PARA ABAJO
---------------------------------------------------
-
-set SERVEROUTPUT on;
-
-
------CREACION DE LAS VISTAS----
-
--- 1 Consultar cuántos clientes reservan por distintos periodos de tiempo.​
-
- CREATE VIEW VISTA_1_CUATRIMESTRE 
- AS SELECT TO_CHAR(fecha_reserva, 'Q') as "Cuatrimestre", COUNT(fecha_reserva) as "Cantidad" FROM reservacion
-GROUP BY TO_CHAR(fecha_reserva, 'Q') 
-ORDER BY TO_CHAR(fecha_reserva, 'Q');
-
-
--- 2 Conocer los dias más habituales de reserva. 
-
- CREATE VIEW VISTA_2_DIAS_HABITUALES 
-AS SELECT TO_CHAR(fecha_reserva, 'DAY') AS "Dia de la semana" , COUNT(fecha_reserva) AS "Cantidad" FROM reservacion
-GROUP BY TO_CHAR(fecha_reserva, 'DAY') 
-ORDER BY COUNT(fecha_reserva) DESC;
-
-
--- 3 Identificar al consumidor a partir de la nacionalidad. 
-
- CREATE VIEW VISTA_3_NACIONALIDADES
-AS SELECT p.pais_nombre AS "País", COUNT(c.id_cliente) AS "Cantidad de clientes"
-    FROM PAIS p
-    INNER JOIN CLIENTES c ON c.cod_pais = p.id_pais
-    GROUP BY P.pais_nombre
-    ORDER BY "Cantidad de clientes" DESC;
-
-
--- 4 Crear paquetes a partir de la cantidad de personas que suelen reservar en grupo.​
-
- CREATE VIEW VISTA_4_PAQUETES
-AS SELECT
-    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 0 AND 1 THEN 1 ELSE 0 END) AS "Paquete Individual",
-    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 2 AND 2 THEN 1 ELSE 0 END) AS "Paquete Duo",
-    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 3 AND 3 THEN 1 ELSE 0 END) AS "Paquete Triple",
-    SUM(CASE WHEN CANTIDAD_PERSONAS BETWEEN 4 AND 10 THEN 1 ELSE 0 END) AS "Paquete Familiar"
- FROM RESERVA_TOURS;
-
-
--- 5 Establecer los tours ofrecidos más frecuentados.​
-
- CREATE VIEW VISTA_5_TOURS_FAVORITOS
-AS SELECT  t.tour_nombre AS "Nombre del tour" , COUNT(b.ID_TOUR1) AS "Cantidad de reservas"
-FROM tours t
-INNER JOIN reserva_tours b 
-ON b.ID_TOUR1 = t.id_tours
-GROUP BY t.tour_nombre
-ORDER BY COUNT(b.ID_TOUR1) DESC;
-
-
--- 6 Determinar el rango de edades más frecuentes de los clientes. 
-
- CREATE VIEW VISTA_6_EDADES
-AS SELECT
-    SUM(CASE WHEN edad BETWEEN 18 AND 24 THEN 1 ELSE 0 END) AS "18-24 Años",
-    SUM(CASE WHEN edad BETWEEN 25 AND 54 THEN 1 ELSE 0 END) AS "25-54 Años",
-    SUM(CASE WHEN edad BETWEEN 55 AND 63 THEN 1 ELSE 0 END) AS "55-63 Años",
-    SUM(CASE WHEN edad BETWEEN 64 AND 105 THEN 1 ELSE 0 END) AS "64+ Años"
- FROM clientes;
-
--- 7 Comparar la cantidad de tours de cada guía turístico
-
-CREATE VIEW VISTA_7_GUIAS_TURISTICOS AS SELECT (g.nombre1||' '||g.apellido1) as GUIA, COUNT(t.id_guia) "Tours"
-FROM Guias g
-    INNER JOIN TOURS t ON g.id_guia = t.id_guia
-    GROUP BY g.nombre1, g.apellido1
-    ORDER BY COUNT(t.id_guia) DESC;
-
-
-    -- 8 Vista de Calificacion de Tours
-
-CREATE VIEW VISTA_8_CALIFICACION_TOUR AS SELECT (t.tour_nombre) as "Nombre Tour", AVG(r.calificacion) "Calificación", COUNT(r.id_tour) AS "Cantidad de Reviews"
-FROM TOURS t
-    INNER JOIN REVIEWS r ON r.id_tour = t.id_tours 
-    GROUP BY t.tour_nombre
-    ORDER BY AVG(r.calificacion) DESC;
+/*
+EXECUTE registrarfactura (27,100,'CO');
+EXECUTE registrarfactura (28,28,100,'CO');
+EXECUTE registrarfactura (29,29,2100,'CO');
+EXECUTE registrarfactura (30,3100,'CO');
+EXECUTE registrarfactura (31,5100,'CO');
+EXECUTE registrarfactura (32,100,'CO');
+EXECUTE registrarfactura (33,9100,'CO');
+EXECUTE registrarfactura (34,100,'CO');
+EXECUTE registrarfactura (35,100,'CO');
+EXECUTE registrarfactura (36,1100,'CO');
+EXECUTE registrarfactura (37,3100,'CO');
+EXECUTE registrarfactura (38,9100,'CO');
+EXECUTE registrarfactura (39,10100,'CO');
+EXECUTE registrarfactura (40, 100,'CO');
+EXECUTE registrarfactura (41,100,'CO');
+EXECUTE registrarfactura (42,100,'CO');
+EXECUTE registrarfactura (43,3100,'CO');
+EXECUTE registrarfactura (44,3100,'CO');
+EXECUTE registrarfactura (45,4100,'CO');
+EXECUTE registrarfactura (46,7100,'CO');
+EXECUTE registrarfactura (47,100,'CO');
+EXECUTE registrarfactura (48,100,'CO');
+EXECUTE registrarfactura (49,100,'CO');
+EXECUTE registrarfactura (50,2100,'CO');
+EXECUTE registrarfactura (51,100,'CO');
+EXECUTE registrarfactura (52,100,'CO');*/
 
 
 
--- 9 PROMOCIONES DEL TOUR
 
-CREATE VIEW VISTA_9_PROMOCIONES 
-AS SELECT p.descripcion AS "Promociones del tour", COUNT(t.id_promo) AS "Cantidad de tour"
-FROM promociones p
-INNER JOIN tours t
-ON p.id_promo = t.id_promo
-GROUP BY p.descripcion
-ORDER BY COUNT(t.ID_PROMO) DESC;
 
---10 MONTO DE FACTURACIÓN
 
-CREATE VIEW VISTA_10_MONTO_TOTAL AS SELECT (r.fecha_reserva) as "FECHA", SUM(f.monto_pago) "MONTO"
-FROM RESERVACION r
-    INNER JOIN FACTURACION f ON f.id_reserva = r.id_reserva 
-    GROUP BY r.fecha_reserva
-    ORDER BY COUNT(f.monto_pago) DESC;
+
+
+
+
+
+
+
+
+
 
 
 
